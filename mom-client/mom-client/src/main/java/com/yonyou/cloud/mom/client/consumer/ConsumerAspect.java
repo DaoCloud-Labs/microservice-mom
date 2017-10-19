@@ -10,8 +10,11 @@ import org.springframework.amqp.support.converter.JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.rabbitmq.client.Channel;
+import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
 import com.yonyou.cloud.mom.core.store.impl.DbStoreConsumerMsg;
@@ -28,27 +31,39 @@ public class ConsumerAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerAspect.class);
 
-    public static final MessageConverter messageConverter = new JsonMessageConverter();
+	@Autowired
+	MessageConverter messageConverter;
 
-    @Autowired
-    private DbStoreConsumerMsg dbStoreConsumerMsg ;
+    private ConsumerMsgStore dbStoreConsumerMsg  = new DbStoreConsumerMsg();
+    
+    
+    public ConsumerAspect() {
+		super();
+		LOGGER.debug("MQ  Consumer aop初始化");
+	}
 
-    @Around("@annotation(MomConsumer) && args(message)")
-    public Object aroundAdvice(final ProceedingJoinPoint pjp, MomConsumer momConsumer, Message message)
-        throws Throwable {
+    @Around("@annotation(com.yonyou.cloud.mom.client.consumer.MomConsumer)")
+    public Object aroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
+    	
+    	Object[] args = pjp.getArgs();// 参数pjp.getArgs()
+    	
+    	Message message = (Message)args[0];
+    	
+    	Channel channel = (Channel)args[1];
 
         boolean isProcessing = false;
 
         Object object = null;
 
-        Long startTime = System.currentTimeMillis();
+        Long startTime = System.currentTimeMillis(); //开始时间
 
         try {
 
-            String msgKey = message.getMessageProperties().getCorrelationIdString();
+            String msgKey = new String ( message.getMessageProperties().getCorrelationId());
             try {
-                object = ConsumerAspect.messageConverter.fromMessage(message);
+                object = messageConverter.fromMessage(message);
                 // 是否在处理中
+                LOGGER.debug("msg data  ==== " +object);
                 isProcessing = dbStoreConsumerMsg.isProcessing(msgKey);
 
             } catch (MessageConversionException e) {
@@ -71,7 +86,8 @@ public class ConsumerAspect {
 
                         // setting to success
                         dbStoreConsumerMsg.updateMsgSuccess(msgKey);
-
+                        
+                        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     } catch (Throwable t) {
                         LOGGER.error(t.getMessage());
 

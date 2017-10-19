@@ -11,8 +11,8 @@ import org.springframework.amqp.core.MessageListener;
  * @author BENJAMIN
  *
  */
-public abstract class AbstractConsumerJustListern implements MessageListener{
+public abstract class AbstractConsumerJustListen implements MessageListener{
 	
-	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumerJustListern.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumerJustListen.class);
 
 }

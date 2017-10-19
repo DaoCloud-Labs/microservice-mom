@@ -17,7 +17,7 @@ public interface ConsumerStoreDbCallback {
      * @param msgKey
      * @throws StoreDBCallbackException
      */
-    void exist(String msgKey) throws StoreDBCallbackException;
+    boolean exist(String msgKey) throws StoreDBCallbackException;
 
     /**
      * 根据msgkey判断消息是否在处理中
@@ -25,7 +25,7 @@ public interface ConsumerStoreDbCallback {
      * @param msgKey
      * @throws StoreDBCallbackException
      */
-    void isProcessing(String msgKey) throws StoreDBCallbackException;
+    boolean isProcessing(String msgKey) throws StoreDBCallbackException;
     
     
     /**

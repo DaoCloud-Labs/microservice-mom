@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 消费者入口
+ * 消费者标识
  * 
  * @author BENJAMIN
  *
