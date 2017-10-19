@@ -28,8 +28,6 @@ public class BizService {
 		
 		mqSender.send("tt", "login", name+"log event");
 		
-		mqSender.send("tt", "login", name+"log event 2");
-		
 		if(name.equals("liuxudong")){
 			throw new RuntimeException();
 		}
