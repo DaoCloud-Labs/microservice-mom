@@ -40,6 +40,11 @@ public class MqConfig {
 	public SpringUtil springUtil(){
 		return new SpringUtil();
 	}
+	
+	@Bean
+	public ProducerMsgStore getDbStoreProducerMsg(){
+		return new DbStoreProducerMsg();
+	}
 }
 ```
 
@@ -64,7 +69,6 @@ public class DemoMsgCallBack implements ProducerStoreDBCallback {
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = RuntimeException.class)
 	public void update2InitFailed(String correlation, String infoMsg, Long costTime) throws StoreDBCallbackException {
 		System.out.println("进入消息发送失败的逻辑" + correlation);
 		MsgEntity msg = new MsgEntity();
