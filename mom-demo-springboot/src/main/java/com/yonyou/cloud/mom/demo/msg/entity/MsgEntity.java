@@ -4,8 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
-
 @Entity
 @Table(name="MON_DATA")
 public class MsgEntity {
