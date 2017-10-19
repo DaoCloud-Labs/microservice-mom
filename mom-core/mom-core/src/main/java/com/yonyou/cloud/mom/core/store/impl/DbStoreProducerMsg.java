@@ -14,7 +14,6 @@ import com.yonyou.cloud.mom.core.util.SpringUtil;
  * 存储生产者消息的实现
  * 通过DB存储
  */
-@Transactional
 public class DbStoreProducerMsg implements ProducerMsgStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbStoreProducerMsg.class);
@@ -25,8 +24,7 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
     @Override
     public void msgStore(String msgKey, String data, String exchange, String routerKey) throws StoreException {
 
-    	ProducerStoreDBCallback producerStoreDBCallback =
-            (ProducerStoreDBCallback) SpringUtil.getBean(ProducerStoreDBCallback.class);
+    	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
     	
         if (producerStoreDBCallback != null && data != null && msgKey != null) {
             LOGGER.debug("save msg to db.");
@@ -61,8 +59,7 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
     @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor =RuntimeException.class)
     public void msgStoreFailed(String msgKey, String infoMsg, Long costTime) throws StoreException {
 
-    	ProducerStoreDBCallback producerStoreDBCallback =
-            (ProducerStoreDBCallback) SpringUtil.getBean(ProducerStoreDBCallback.class);
+    	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
 
         if (producerStoreDBCallback != null && msgKey != null) {
 
@@ -81,5 +78,16 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
             LOGGER.error("msgKey is null");
             throw new StoreException(errorMsg);
         }
+        
+    }
+    
+    /**
+     * 获取callback
+     * 
+     * @return
+     */
+    private ProducerStoreDBCallback getCallBack(){
+    	ProducerStoreDBCallback callback = (ProducerStoreDBCallback) SpringUtil.getBean(ProducerStoreDBCallback.class);
+    	return callback;
     }
 }

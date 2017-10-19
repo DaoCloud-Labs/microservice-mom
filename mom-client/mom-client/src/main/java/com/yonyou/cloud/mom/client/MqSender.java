@@ -19,5 +19,5 @@ public interface MqSender {
 	 * @param routeKey
 	 * @param data
 	 */
-	void directSend(String exchange, String routeKey, Object data);
+	void justSend(String exchange, String routeKey, Object data);
 }
