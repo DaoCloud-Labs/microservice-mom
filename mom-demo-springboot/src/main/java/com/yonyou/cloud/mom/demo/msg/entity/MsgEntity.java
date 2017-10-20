@@ -8,40 +8,108 @@ import javax.persistence.Table;
 @Table(name="MON_DATA")
 public class MsgEntity {
 	
-	
-	
 	public MsgEntity() {
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	@Id
-	private String id;
+	private String msgKey;
 	
-	private String msg;
+	private String msgContent;
 	
-	public String getMsg() {
-		return msg;
+	private Integer status;
+	
+	private Long createTime;
+	
+	private Long updateTime;
+	
+	private String exchange;
+	
+	private String routerKey;
+	
+	private String infoMsg;
+	
+	private Integer retryCount;
+
+	public String getMsgKey() {
+		return msgKey;
 	}
 
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public void setMsgKey(String msgKey) {
+		this.msgKey = msgKey;
 	}
 
-	public String getIsSend() {
-		return isSend;
+	public String getMsgContent() {
+		return msgContent;
 	}
 
-	public void setIsSend(String isSend) {
-		this.isSend = isSend;
+	public void setMsgContent(String msgContent) {
+		this.msgContent = msgContent;
 	}
 
-	private String isSend;
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Long createTime) {
+		this.createTime = createTime;
+	}
+
+	public Long getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Long updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public String getExchange() {
+		return exchange;
+	}
+
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
+	}
+
+	public String getRouterKey() {
+		return routerKey;
+	}
+
+	public void setRouterKey(String routerKey) {
+		this.routerKey = routerKey;
+	}
+
+	public String getInfoMsg() {
+		return infoMsg;
+	}
+
+	public void setInfoMsg(String infoMsg) {
+		this.infoMsg = infoMsg;
+	}
+
+	public Integer getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(Integer retryCount) {
+		this.retryCount = retryCount;
+	}
+
+	@Override
+	public String toString() {
+		return "MsgEntity [msgKey=" + msgKey + ", msgContent=" + msgContent + ", status=" + status + ", createTime="
+				+ createTime + ", updateTime=" + updateTime + ", exchange=" + exchange + ", routerKey=" + routerKey
+				+ ", infoMsg=" + infoMsg + ", retryCount=" + retryCount + "]";
+	}
+	
+	
+	
 
 }
