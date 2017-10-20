@@ -1,5 +1,7 @@
 package com.yonyou.cloud.mom.demo.service;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yonyou.cloud.mom.client.MqSender;
 import com.yonyou.cloud.mom.demo.dao.BizDao;
 import com.yonyou.cloud.mom.demo.msg.entity.BizEntity;
+import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
 
 @Service
 @Transactional
@@ -26,11 +29,12 @@ public class BizService {
 		e.setName(name);
 		bizDao.save(e);
 		
-		mqSender.send("tt", "login", name+"log event");
+		LoginMsg msg = new LoginMsg();
+		msg.setLoginName(name);
+		msg.setLoginTime(new Date().getTime());
 		
-		if(name.equals("liuxudong")){
-			throw new RuntimeException();
-		}
+		mqSender.send("event-exchange", "login", msg);
+		
 		return "1";
 	}
 

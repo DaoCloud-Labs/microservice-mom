@@ -13,7 +13,7 @@ public interface ProducerStoreDBCallback{
      * @param correlation
      * @param data
      */
-    void saveStatusData(String correlation, String data, String exchange, String routerKey)
+    void saveStatusData(String msgKey, String data, String exchange, String routerKey)
         throws StoreDBCallbackException;
 
     /**
@@ -24,6 +24,6 @@ public interface ProducerStoreDBCallback{
      *
      * @throws StoreUserCallbackException
      */
-    void update2InitFailed(String correlation, String infoMsg, Long costTime) throws StoreDBCallbackException;
+    void update2InitFailed(String msgKey, String infoMsg, Long costTime) throws StoreDBCallbackException;
 
 }

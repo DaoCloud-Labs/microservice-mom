@@ -11,6 +11,8 @@
 		additivity="true"></logger>
 	<logger name="org.springframework.jdbc" level="INFO"
 		additivity="true"></logger>
+	<logger name="org.springframework.orm.jpa" level="debug"
+		additivity="true"></logger>
 
 	<logger name="com.yonyou" level="debug" />
 
@@ -89,7 +91,7 @@
 		</filter>
 	</appender> 
 	
-	<root level="INFO">
+	<root level="info">
 		<appender-ref ref="ALLFILE" />
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="ERRORFILE" />

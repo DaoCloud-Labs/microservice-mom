@@ -65,7 +65,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	}
 
 	@Override
-	public void directSend(String exchange, String routeKey, Object data) {
+	public void justSend(String exchange, String routeKey, Object data) {
 		// TODO Auto-generated method stub
 
 	}
@@ -91,15 +91,17 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	}
 	
 	
-	protected void sendRabbitQ(final String exchange,final String routeKey, final String correlation, final Object data) {
+	protected void sendRabbitQ(String exchange,String routeKey, String correlation, Object data) {
 
 		getRabbitOperations().convertAndSend(exchange,routeKey, data, new MessagePostProcessor() {
 
 			public Message postProcessMessage(Message message) throws AmqpException {
 
                 try {
-
-                    message.getMessageProperties().setCorrelationIdString(correlation);
+//                    message.getMessageProperties().setCorrelationIdString(correlation);
+                	
+                	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
+                    message.getMessageProperties().setContentType("json");
 
                 } catch (Exception e) {
                     throw new AmqpException(e);
@@ -108,7 +110,8 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
                 return message;
             }
         });
-
+		
+		LOGGER.debug("------消息发送完成------");
     }
 
 	/**
