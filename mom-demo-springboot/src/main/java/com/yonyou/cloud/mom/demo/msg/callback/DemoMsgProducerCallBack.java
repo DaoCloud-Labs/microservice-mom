@@ -82,6 +82,8 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 			 dto.setMsgKey(msg.getMsgKey());
 			 dto.setRouterKey(msg.getRouterKey());
 			 dto.setMsgContent(msg.getMsgContent());
+			 dto.setBizClassName(msg.getBizClassName());
+			 dto.setMsgContent(msg.getMsgContent());
 			  producerdtolist.add(dto);
 		  }
 		  return producerdtolist;

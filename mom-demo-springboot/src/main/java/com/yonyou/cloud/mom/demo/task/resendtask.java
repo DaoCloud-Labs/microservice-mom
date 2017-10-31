@@ -20,10 +20,10 @@ public class resendtask {
 	
 	@Scheduled(fixedRate = 60000)
 	public void exposeTokenTime() {
-		try {
-			bizsrv.saveLoginUser("登录信息");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			bizsrv.saveLoginUser("登录信息");
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 	}
 }
