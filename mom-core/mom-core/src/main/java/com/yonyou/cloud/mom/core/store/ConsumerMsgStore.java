@@ -33,7 +33,7 @@ public interface ConsumerMsgStore {
      * @param msgKey
      * @throws StoreException
      */
-    void updateMsgProcessing(String msgKey) throws StoreException;
+    void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String bizClassName) throws StoreException;
     
     
     /**

@@ -1,5 +1,8 @@
 package com.yonyou.cloud.mom.core.store.callback;
 
+import java.util.List;
+
+import com.yonyou.cloud.mom.core.dto.ProducerDto;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
 
 /**
@@ -13,8 +16,15 @@ public interface ProducerStoreDBCallback{
      * @param correlation
      * @param data
      */
-    void saveStatusData(String msgKey, String data, String exchange, String routerKey)
+    void saveMsgData(String msgKey, String data, String exchange, String routerKey,String bizClassName)
         throws StoreDBCallbackException;
+    
+    /**
+     * 发送成功
+     * @param originalMsgKey
+     * @throws StoreDBCallbackException
+     */
+    void update2success(String msgKey)throws StoreDBCallbackException;
 
     /**
      * 处理为初始化失败
@@ -24,6 +34,12 @@ public interface ProducerStoreDBCallback{
      *
      * @throws StoreUserCallbackException
      */
-    void update2InitFailed(String msgKey, String infoMsg, Long costTime) throws StoreDBCallbackException;
-
+    void update2faild(String msgKey, String infoMsg, Long costTime) throws StoreDBCallbackException;
+    
+    /**
+     * 获取需要重新发送的内容
+     * @param status
+     * @return
+     */
+    public List<ProducerDto> selectResendList(Integer status);
 }

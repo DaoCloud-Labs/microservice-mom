@@ -1,10 +1,13 @@
 package com.yonyou.cloud.mom.core.store.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yonyou.cloud.mom.core.dto.ProducerDto;
 import com.yonyou.cloud.mom.core.store.ProducerMsgStore;
 import com.yonyou.cloud.mom.core.store.callback.ProducerStoreDBCallback;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
@@ -22,13 +25,13 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
      * 存储消息
      */
     @Override
-    public void msgStore(String msgKey, String data, String exchange, String routerKey) throws StoreException {
+    public void msgStore(String msgKey, String data, String exchange, String routerKey,String bizClassName) throws StoreException {
 
     	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
     	
         if (producerStoreDBCallback != null && data != null && msgKey != null) {
             LOGGER.debug("save msg to db.");
-            producerStoreDBCallback.saveStatusData(msgKey, data, exchange, routerKey);
+    	   producerStoreDBCallback.saveMsgData(msgKey, data, exchange, routerKey,bizClassName);
 
         } else {
 
@@ -64,7 +67,7 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
         if (producerStoreDBCallback != null && msgKey != null) {
 
             LOGGER.debug("data encounter error: " + infoMsg);
-            producerStoreDBCallback.update2InitFailed(msgKey, infoMsg, costTime);
+            producerStoreDBCallback.update2faild(msgKey, infoMsg, costTime);
 
         } else {
 
@@ -81,6 +84,40 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
         
     }
     
+    
+    /**
+     * 处理为失败
+     *
+     * @param msgKey
+     * @param infoMsg
+     * @param costTime
+     *
+     * @throws StoreException
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor =RuntimeException.class)
+    public void update2success(String msgKey) throws StoreException {
+
+    	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
+
+        if (producerStoreDBCallback != null && msgKey != null) {
+
+            LOGGER.debug("data encounter error: " + msgKey);
+            producerStoreDBCallback.update2success(msgKey);
+
+        } else {
+            String errorMsg = "";
+            if (producerStoreDBCallback == null) {
+                errorMsg = "dbStoreUserCallback is null";
+            } else {
+                errorMsg = "msgKey is null";
+            }
+            LOGGER.error("msgKey is null");
+            throw new StoreException(errorMsg);
+        }
+        
+    }
+    
     /**
      * 获取callback
      * 
@@ -89,5 +126,12 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
     private ProducerStoreDBCallback getCallBack(){
     	ProducerStoreDBCallback callback = (ProducerStoreDBCallback) SpringUtil.getBean(ProducerStoreDBCallback.class);
     	return callback;
+    }
+    
+    
+    @Override
+    public List<ProducerDto> selectResendList(Integer status){
+    	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
+    	return producerStoreDBCallback.selectResendList(status);
     }
 }

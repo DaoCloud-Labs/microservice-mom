@@ -34,7 +34,7 @@ public interface ConsumerStoreDbCallback {
      * @param msgKey
      * @throws StoreDBCallbackException
      */
-    void updateMsgProcessing(String msgKey) throws StoreDBCallbackException;
+    void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String bizClassName) throws StoreDBCallbackException;
     
     
     /**

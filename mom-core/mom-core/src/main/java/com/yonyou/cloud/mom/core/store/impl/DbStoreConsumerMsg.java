@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.callback.ConsumerStoreDbCallback;
-import com.yonyou.cloud.mom.core.store.callback.ProducerStoreDBCallback;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
 import com.yonyou.cloud.mom.core.util.SpringUtil;
 
@@ -44,9 +43,9 @@ public class DbStoreConsumerMsg implements ConsumerMsgStore {
 
 
 	@Override
-	public void updateMsgProcessing(String msgKey) throws StoreException {
+	public void updateMsgProcessing(String msgKey,String data,String exchange,String queue,String bizClassName) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
-		callback.updateMsgProcessing(msgKey);
+		callback.updateMsgProcessing(msgKey,data,exchange,queue,bizClassName);
 	}
 
 
