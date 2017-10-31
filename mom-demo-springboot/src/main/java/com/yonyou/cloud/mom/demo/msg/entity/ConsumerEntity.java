@@ -10,10 +10,10 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @DynamicUpdate
 @DynamicInsert
-@Table(name="producer_msg")
-public class MsgEntity {
+@Table(name="consumer_msg")
+public class ConsumerEntity {
 	
-	public MsgEntity() {
+	public ConsumerEntity() {
 	}
 
 	@Id
