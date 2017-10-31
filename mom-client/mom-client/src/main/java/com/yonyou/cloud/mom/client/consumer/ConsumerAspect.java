@@ -3,6 +3,7 @@ package com.yonyou.cloud.mom.client.consumer;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -64,7 +65,7 @@ public class ConsumerAspect {
                 object = messageConverter.fromMessage(message);
                 // 是否在处理中
                 LOGGER.debug("msg data  ==== " +object);
-                isProcessing = dbStoreConsumerMsg.isProcessing(msgKey);
+                isProcessing = dbStoreConsumerMsg.isProcessing(msgKey);//false 没有在处理中，true已经在出来中了
 
             } catch (MessageConversionException e) {
 
@@ -73,9 +74,12 @@ public class ConsumerAspect {
 
             if (object != null) {
                 if (!isProcessing) {
-
+                	
+                	ObjectMapper mapper = new ObjectMapper();
+                	String dataConvert = mapper.writeValueAsString(object);
+                	String bizclassName=message.getMessageProperties().getHeaders().get("__TypeId__").toString();
                     // setting to processing
-                	dbStoreConsumerMsg.updateMsgProcessing(msgKey);
+                	dbStoreConsumerMsg.updateMsgProcessing(msgKey, dataConvert,message.getMessageProperties().getReceivedExchange(),message.getMessageProperties().getConsumerQueue(),bizclassName);
 
                     // 执行
                     Object rtnOb;
