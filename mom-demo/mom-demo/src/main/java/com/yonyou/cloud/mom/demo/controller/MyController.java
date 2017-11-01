@@ -7,18 +7,23 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yonyou.cloud.mom.client.MqSender;
+import com.yonyou.cloud.mom.client.consumer.MomConsumer;
 import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
 
 @Controller
 public class MyController {
+	
+	private static Logger logger = Logger.getLogger(MyController.class);
 	
 	@Autowired
 	private MqSender mqSender;
@@ -50,8 +55,12 @@ public class MyController {
 	
 	@RequestMapping(value="/test/{message}")  
 	@ResponseBody
-    public void test(@PathVariable("message") String message){  
-		System.out.println(message);
+	@MomConsumer
+    public void test(@PathVariable("message") String message){ 
+		logger.error(message);
+		logger.debug(message);
+		logger.info(message);
+		logger.warn(message);
     }  
 
 	@RequestMapping("/test")

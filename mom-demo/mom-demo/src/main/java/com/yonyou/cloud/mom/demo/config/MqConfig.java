@@ -6,12 +6,10 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitOperations;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -79,7 +77,7 @@ public class MqConfig {
 		container.setMaxConcurrentConsumers(10);
 		container.setConcurrentConsumers(5);
 		container.setAcknowledgeMode(AcknowledgeMode.MANUAL); // 设置确认模式手工确认
-		container.setMessageListener(new PointsListenLogin());
+		container.setMessageListener(pointsListenLogin());
 		return container;
 	}
 	
@@ -98,9 +96,9 @@ public class MqConfig {
 	}
 	
 	
-//	@Bean
-//	public PointsListenLogin pointsListenLogin(){
-//		return new PointsListenLogin();
-//	}
-//	
+	@Bean
+	public PointsListenLogin pointsListenLogin(){
+		return new PointsListenLogin();
+	}
+	
 }
