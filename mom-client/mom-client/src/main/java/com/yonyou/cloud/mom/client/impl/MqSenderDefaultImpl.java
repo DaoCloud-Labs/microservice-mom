@@ -155,7 +155,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 			
 			 
 			try {
-				 Class c = this.getClass().forName(msgEntity.getBizClassName());
+				 Class c =Class.forName(msgEntity.getBizClassName()); 
 				 JSONObject obj = new JSONObject().fromObject(msgEntity.getMsgContent());
 				 Object ojbClass = JSONObject.toBean(obj,c);
 				 
