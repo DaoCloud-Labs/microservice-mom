@@ -35,10 +35,11 @@ public class MqConfig {
 	
 
 	@Bean
-	public MqSenderDefaultImpl mqSenderDefaultImpl(CachingConnectionFactory f) {
+	public MqSenderDefaultImpl mqSenderDefaultImpl(CachingConnectionFactory f, MessageConverter converter) {
 		MqSenderDefaultImpl mqSenderDefaultImpl = new MqSenderDefaultImpl();
 		RabbitTemplate rabbitTemplate = new RabbitTemplate();
 		rabbitTemplate.setConnectionFactory(f);
+		rabbitTemplate.setMessageConverter(converter);
 		mqSenderDefaultImpl.setRabbitTemplate(rabbitTemplate);
 //		mqSenderDefaultImpl.setRabbitOperations(rabbitOperations);
 		return mqSenderDefaultImpl;

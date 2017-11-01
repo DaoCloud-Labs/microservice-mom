@@ -37,18 +37,6 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 //		return true;
 	}
 
-	@Override
-	public void updateMsgProcessing(String msgKey) throws StoreDBCallbackException {
-//		MsgEntity msg = msgDao.findOne(msgKey);
-//		if(msg!=null){
-//			msg.setStatus(StoreStatusEnum.CONSUMER_PROCESS.getValue());
-//			msg.setUpdateTime(new Date().getTime());
-//			msgDao.save(msg);
-//		}else{
-//			throw new StoreDBCallbackException("can not find msg "+msgKey);
-//		}
-		
-	}
 
 	@Override
 	public void updateMsgSuccess(String msgKey) throws StoreDBCallbackException {
@@ -72,6 +60,13 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 //		}else{
 //			throw new StoreDBCallbackException("can not find msg "+msgKey);
 //		}
+		
+	}
+
+	@Override
+	public void updateMsgProcessing(String msgKey, String data, String exchange, String routerKey, String bizClassName)
+			throws StoreDBCallbackException {
+		// TODO Auto-generated method stub
 		
 	}
 	
