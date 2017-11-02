@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yonyou.cloud.mom.demo.dao.ConsumerMsgMapper" >
+  <resultMap id="BaseResultMap" type="com.yonyou.cloud.mom.demo.entity.ConsumerMsg" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="MSG_KEY" property="msgKey" jdbcType="VARCHAR" />
+    <result column="MSG_CONTENT" property="msgContent" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="EXCHANGE" property="exchange" jdbcType="VARCHAR" />
+    <result column="ROUTER_KEY" property="routerKey" jdbcType="VARCHAR" />
+    <result column="INFO_MSG" property="infoMsg" jdbcType="VARCHAR" />
+    <result column="RETRY_COUNT" property="retryCount" jdbcType="INTEGER" />
+    <result column="BIZCLASS_NAME" property="bizclassName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    MSG_KEY, MSG_CONTENT, STATUS, CREATE_TIME, UPDATE_TIME, EXCHANGE, ROUTER_KEY, INFO_MSG, 
+    RETRY_COUNT, BIZCLASS_NAME
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.yonyou.cloud.mom.demo.entity.ConsumerMsgExample" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from consumer_msg
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.yonyou.cloud.mom.demo.entity.ConsumerMsgExample" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    delete from consumer_msg
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <select id="countByExample" parameterType="com.yonyou.cloud.mom.demo.entity.ConsumerMsgExample" resultType="java.lang.Integer" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    select count(*) from consumer_msg
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    update consumer_msg
+    <set >
+      <if test="record.msgKey != null" >
+        MSG_KEY = #{record.msgKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.msgContent != null" >
+        MSG_CONTENT = #{record.msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        STATUS = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        CREATE_TIME = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        UPDATE_TIME = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.exchange != null" >
+        EXCHANGE = #{record.exchange,jdbcType=VARCHAR},
+      </if>
+      <if test="record.routerKey != null" >
+        ROUTER_KEY = #{record.routerKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.infoMsg != null" >
+        INFO_MSG = #{record.infoMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.retryCount != null" >
+        RETRY_COUNT = #{record.retryCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.bizclassName != null" >
+        BIZCLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    update consumer_msg
+    set MSG_KEY = #{record.msgKey,jdbcType=VARCHAR},
+      MSG_CONTENT = #{record.msgContent,jdbcType=VARCHAR},
+      STATUS = #{record.status,jdbcType=INTEGER},
+      CREATE_TIME = #{record.createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{record.updateTime,jdbcType=TIMESTAMP},
+      EXCHANGE = #{record.exchange,jdbcType=VARCHAR},
+      ROUTER_KEY = #{record.routerKey,jdbcType=VARCHAR},
+      INFO_MSG = #{record.infoMsg,jdbcType=VARCHAR},
+      RETRY_COUNT = #{record.retryCount,jdbcType=INTEGER},
+      BIZCLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <select id="selectByKey" resultMap="BaseResultMap">
+  		SELECT * from consumer_msg
+  		WHERE MSG_KEY = #{msgKey,jdbcType=VARCHAR}
+  </select>
+  <select id="findByMsgKeyAndStatus" resultMap="BaseResultMap">
+  		SELECT * from consumer_msg
+  		WHERE MSG_KEY = #{msgKey,jdbcType=VARCHAR} and status = #{status,jdbcType=INTEGER}
+  </select>
+  <update id="updateByKey">
+  	 update consumer_msg
+    <set >
+      <if test="msgContent != null" >
+        MSG_CONTENT = #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="exchange != null" >
+        EXCHANGE = #{exchange,jdbcType=VARCHAR},
+      </if>
+      <if test="routerKey != null" >
+        ROUTER_KEY = #{routerKey,jdbcType=VARCHAR},
+      </if>
+      <if test="infoMsg != null" >
+        INFO_MSG = #{infoMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="retryCount != null" >
+        RETRY_COUNT = #{retryCount,jdbcType=INTEGER},
+      </if>
+      <if test="bizclassName != null" >
+        BIZCLASS_NAME = #{bizclassName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE MSG_KEY = #{msgKey,jdbcType=VARCHAR}
+  </update>
+  <insert id="insert" parameterType = "com.yonyou.cloud.mom.demo.entity.ConsumerMsg">
+  	 INSERT INTO consumer_msg
+  	 <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="msgKey != null">
+        MSG_KEY,
+      </if>
+      <if test="msgContent != null">
+        MSG_CONTENT,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="exchange != null">
+        EXCHANGE,
+      </if>
+      <if test="routerKey != null">
+        ROUTER_KEY,
+      </if>
+      <if test="infoMsg != null">
+        INFO_MSG,
+      </if>
+      <if test="retryCount != null">
+        RETRY_COUNT,
+      </if>
+      <if test="bizclassName != null">
+        BIZCLASS_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="msgKey != null">
+         #{msgKey,jdbcType=VARCHAR},
+      </if>
+      <if test="msgContent != null">
+         #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+         #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+          #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+          #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="exchange != null">
+         #{exchange,jdbcType=VARCHAR},
+      </if>
+      <if test="routerKey != null">
+         #{routerKey,jdbcType=VARCHAR},
+      </if>
+      <if test="infoMsg != null">
+         #{infoMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="retryCount != null">
+         #{retryCount,jdbcType=INTEGER},
+      </if>
+      <if test="bizclassName != null">
+         #{bizclassName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

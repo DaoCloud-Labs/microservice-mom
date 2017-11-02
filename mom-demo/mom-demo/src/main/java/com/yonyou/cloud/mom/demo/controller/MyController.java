@@ -13,17 +13,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yonyou.cloud.mom.client.MqSender;
-import com.yonyou.cloud.mom.client.consumer.MomConsumer;
+import com.yonyou.cloud.mom.demo.dao.UserTMapper;
 import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
+import com.yonyou.cloud.mom.demo.service.BizService;
 
 @Controller
 public class MyController {
 	
 	private static Logger logger = Logger.getLogger(MyController.class);
+	
+	@Autowired
+	private BizService bizService;
+	
+	@Autowired
+	private UserTMapper mapper;
 	
 	@Autowired
 	private MqSender mqSender;
@@ -55,8 +61,9 @@ public class MyController {
 	
 	@RequestMapping(value="/test/{message}")  
 	@ResponseBody
-	@MomConsumer
     public void test(@PathVariable("message") String message){ 
+		int selectCnt = mapper.selectCnt();
+			logger.info(selectCnt);
 		logger.error(message);
 		logger.debug(message);
 		logger.info(message);
@@ -79,6 +86,12 @@ public class MyController {
 			executor.execute(r);
 		}
 		return "done";
+	}
+	
+	@RequestMapping("/login/{name}")
+	@ResponseBody
+	public String login(@PathVariable("name") String name) throws Exception{
+		return bizService.saveLoginUser(name);
 	}
 
 }
