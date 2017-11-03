@@ -39,10 +39,10 @@ public class MqConfig {
 		return new SpringUtil();
 	}
 
-	@Bean
-	public ProducerMsgStore getDbStoreProducerMsg() {
-		return new DbStoreProducerMsg();
-	}
+//	@Bean
+//	public ProducerMsgStore getDbStoreProducerMsg() {
+//		return new DbStoreProducerMsg();
+//	}
 
 	@Bean
 	public Queue pointsListenLoginQueue() {
@@ -69,6 +69,7 @@ public class MqConfig {
 		container.setConcurrentConsumers(1);
 		container.setAcknowledgeMode(AcknowledgeMode.MANUAL); // 设置确认模式手工确认
 		container.setMessageListener(pointsListenLogin);
+		container.setMaxConcurrentConsumers(10);//设置最大消费者数量 防止大批量涌入
 		return container;
 	}
 

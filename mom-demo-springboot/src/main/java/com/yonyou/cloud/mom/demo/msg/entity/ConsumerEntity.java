@@ -35,6 +35,8 @@ public class ConsumerEntity {
 	
 	private Integer retryCount;
 	
+	private String consumerClassName;//消费者类名
+	
 	private String bizClassName;
 
 	public String getMsgKey() {
@@ -122,6 +124,14 @@ public class ConsumerEntity {
 
 	public void setBizClassName(String bizClassName) {
 		this.bizClassName = bizClassName;
+	}
+
+	public String getConsumerClassName() {
+		return consumerClassName;
+	}
+
+	public void setConsumerClassName(String consumerClassName) {
+		this.consumerClassName = consumerClassName;
 	}
 	
 	

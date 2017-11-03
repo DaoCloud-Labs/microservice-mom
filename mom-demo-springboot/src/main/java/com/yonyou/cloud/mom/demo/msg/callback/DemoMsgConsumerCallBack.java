@@ -1,11 +1,14 @@
 package com.yonyou.cloud.mom.demo.msg.callback;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yonyou.cloud.mom.core.dto.ConsumerDto;
 import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
 import com.yonyou.cloud.mom.core.store.callback.ConsumerStoreDbCallback;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
@@ -42,7 +45,7 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 	}
 
 	@Override
-	public void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String bizClassName) throws StoreDBCallbackException {
+	public void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException {
 		ConsumerEntity msg = consumerDao.findOne(msgKey);
 		if(msg==null){
 			ConsumerEntity msgnew=new ConsumerEntity();
@@ -53,6 +56,7 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 			msgnew.setExchange(exchange);
 			msgnew.setRouterKey(routerKey);
 			msgnew.setBizClassName(bizClassName);
+			msgnew.setConsumerClassName(consumerClassName);
 			consumerDao.save(msgnew);
 		}else{
 			throw new StoreDBCallbackException("can not find msg "+msgKey);
@@ -84,6 +88,23 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		}
 		
 	}
+	
+	@Override
+	 public List<ConsumerDto> selectReConsumerList(Integer status){
+		List<ConsumerDto> dtolist=new ArrayList<>();
+		List<ConsumerEntity> list=consumerDao.findbystatus(status);
+		for(ConsumerEntity consumer:list) {
+			ConsumerDto dto=new ConsumerDto();
+			dto.setMsgKey(consumer.getMsgKey());
+			dto.setMsgContent(consumer.getMsgContent());
+			dto.setConsumerClassName(consumer.getConsumerClassName());
+			dto.setBizClassName(consumer.getBizClassName());
+			dto.setStatus(consumer.getStatus());
+//			dto.setRetryCount(consumer.getRetryCount());
+			dtolist.add(dto);
+		}
+		return dtolist;
+	 }
 	
 
 }

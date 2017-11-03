@@ -1,5 +1,8 @@
 package com.yonyou.cloud.mom.core.store.callback;
 
+import java.util.List;
+
+import com.yonyou.cloud.mom.core.dto.ConsumerDto;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
 
 /**
@@ -34,7 +37,7 @@ public interface ConsumerStoreDbCallback {
      * @param msgKey
      * @throws StoreDBCallbackException
      */
-    void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String bizClassName) throws StoreDBCallbackException;
+    void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException;
     
     
     /**
@@ -53,4 +56,11 @@ public interface ConsumerStoreDbCallback {
      * @throws StoreDBCallbackException
      */
     void updateMsgFaild(String msgKey) throws StoreDBCallbackException;
+    
+    /**
+     * 获取需要重新消费的内容
+     * @param status
+     * @return
+     */
+    public List<ConsumerDto> selectReConsumerList(Integer status);
 }

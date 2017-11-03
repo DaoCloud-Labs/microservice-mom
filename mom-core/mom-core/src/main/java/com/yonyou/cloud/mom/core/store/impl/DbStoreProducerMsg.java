@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import com.yonyou.cloud.mom.core.util.SpringUtil;
  * 存储生产者消息的实现
  * 通过DB存储
  */
+@Component
 public class DbStoreProducerMsg implements ProducerMsgStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbStoreProducerMsg.class);

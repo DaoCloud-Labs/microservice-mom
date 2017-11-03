@@ -1,21 +1,12 @@
 package com.yonyou.cloud.mom.client.consumer;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.rabbitmq.client.Channel;
 
@@ -55,6 +46,6 @@ public abstract class AbstractConsumerListener<Data extends Object> implements C
 	 * 
 	 * @param data
 	 */
-	protected abstract void handleMessage(Data data);
+	public abstract void handleMessage(Data data);
 
 }

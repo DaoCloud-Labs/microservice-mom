@@ -57,7 +57,7 @@ public class ConsumerAspect {
         Object object = null;
 
         Long startTime = System.currentTimeMillis(); //开始时间
-
+        
         try {
 
             String msgKey = new String ( message.getMessageProperties().getCorrelationId());
@@ -78,8 +78,11 @@ public class ConsumerAspect {
                 	ObjectMapper mapper = new ObjectMapper();
                 	String dataConvert = mapper.writeValueAsString(object);
                 	String bizclassName=message.getMessageProperties().getHeaders().get("__TypeId__").toString();
+                	
+             		String consumerClassName=pjp.getTarget().getClass().getName();
+             		
                     // setting to processing
-                	dbStoreConsumerMsg.updateMsgProcessing(msgKey, dataConvert,message.getMessageProperties().getReceivedExchange(),message.getMessageProperties().getConsumerQueue(),bizclassName);
+                	dbStoreConsumerMsg.updateMsgProcessing(msgKey, dataConvert,message.getMessageProperties().getReceivedExchange(),message.getMessageProperties().getConsumerQueue(),consumerClassName,bizclassName);
 
                     // 执行
                     Object rtnOb;
@@ -87,7 +90,6 @@ public class ConsumerAspect {
 
                         // 执行方法
                         rtnOb = pjp.proceed();
-
                         // setting to success
                         dbStoreConsumerMsg.updateMsgSuccess(msgKey);
                         
@@ -97,7 +99,7 @@ public class ConsumerAspect {
 
                         // setting to failed
                         dbStoreConsumerMsg.updateMsgFaild(msgKey);
-
+                        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                         throw t;
                     }
 
