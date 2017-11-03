@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yonyou.cloud.mom.client.MqSender;
-import com.yonyou.cloud.mom.demo.msg.entity.BizEntity;
+import com.yonyou.cloud.mom.demo.dao.TmBizMapper;
+import com.yonyou.cloud.mom.demo.entity.TmBiz;
 import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
 
 @Service
@@ -18,15 +19,14 @@ public class BizService {
 	@Autowired
 	private MqSender mqSender;
 	
-//	@Autowired
-//	private BizDao bizDao;
+	@Autowired
+	private TmBizMapper bizDao;
 	
 	public String saveLoginUser(String name) throws InterruptedException{
 		
-		BizEntity e = new BizEntity();
-		e.setId(name);
-		e.setName(name);
-//		bizDao.save(e);
+		TmBiz tmBiz = new TmBiz();
+		tmBiz.setName(name);
+		bizDao.insert(tmBiz);
 		
 		LoginMsg msg = new LoginMsg();
 		msg.setLoginName(name);
@@ -34,7 +34,7 @@ public class BizService {
 		
 		mqSender.send("event-exchange", "login", msg);
 		
-		return "1";
+		return "success";
 	}
-
+	
 }
