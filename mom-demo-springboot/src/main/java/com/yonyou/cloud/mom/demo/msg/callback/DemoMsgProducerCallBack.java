@@ -43,6 +43,7 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 			msg.setRetryCount(0);
 			msg.setCreateTime(new Date().getTime());
 			msg.setBizClassName(bizClassName);
+			msg.setMsgContent(data);
 			msgDao.save(msg);
 	}
 	
