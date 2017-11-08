@@ -91,7 +91,18 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 				} catch (Exception e) {
 					// 设置为失败
 					LOGGER.debug("------发送消息异常，调用消息存储失败的方法------");
-					msgStore.msgStoreFailed(msgKey, e.toString(), System.currentTimeMillis() - startTime);
+					
+					ObjectMapper mapper = new ObjectMapper();
+					// 转换后的String
+					String dataConvert;
+					try {
+						dataConvert = mapper.writeValueAsString(data);
+					} catch (IOException e1) {
+						throw new AmqpException(e1);
+					}
+					
+					msgStore.msgStoreFailed(msgKey, e.toString(), System.currentTimeMillis() - startTime, exchange,  routeKey,dataConvert,data.getClass().getName());
+					
 				}
 			}
 		});
@@ -109,13 +120,14 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
                 	
                 	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
                     message.getMessageProperties().setContentType("json");
-
+                   
+                    msgStore.update2success(correlation);;
+                    return message;
                 } catch (Exception e) {
                     throw new AmqpException(e);
                 }
 
-                msgStore.update2success(correlation);;
-                return message;
+                
             }
         });
 		

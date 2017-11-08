@@ -62,14 +62,14 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor =RuntimeException.class)
-    public void msgStoreFailed(String msgKey, String infoMsg, Long costTime) throws StoreException {
+    public void msgStoreFailed(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreException {
 
     	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
 
         if (producerStoreDBCallback != null && msgKey != null) {
 
             LOGGER.debug("data encounter error: " + infoMsg);
-            producerStoreDBCallback.update2faild(msgKey, infoMsg, costTime);
+            producerStoreDBCallback.update2faild(msgKey, infoMsg, costTime,exchange,routerKey,data,bizClassName);
 
         } else {
 

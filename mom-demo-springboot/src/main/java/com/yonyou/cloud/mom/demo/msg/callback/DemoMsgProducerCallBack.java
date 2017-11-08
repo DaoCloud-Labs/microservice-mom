@@ -57,13 +57,17 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 	}
 
 	@Override
-	public void update2faild(String msgKey, String infoMsg, Long costTime) throws StoreDBCallbackException {
+	public void update2faild(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreDBCallbackException {
 		System.out.println("进入消息发送失败的逻辑" + msgKey);
 		MsgEntity msg = new MsgEntity();
 		msg.setMsgKey(msgKey);
 		msg.setStatus(StoreStatusEnum.PRODUCER_FAILD.getValue());
 		msg.setInfoMsg(infoMsg);
 		msg.setUpdateTime(new Date().getTime());
+		msg.setBizClassName(bizClassName);
+		msg.setExchange(exchange);
+		msg.setRouterKey(routerKey);
+		msg.setMsgContent(data);
 		msgDao.save(msg);
 	}
 	

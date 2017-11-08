@@ -22,7 +22,7 @@ public interface ProducerMsgStore {
      *
      * @throws StoreException
      */
-    void msgStoreFailed(String msgKey, String infoMsg, Long costTime) throws StoreException;
+    void msgStoreFailed(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreException;
     
     /**
      * 发送成功处理

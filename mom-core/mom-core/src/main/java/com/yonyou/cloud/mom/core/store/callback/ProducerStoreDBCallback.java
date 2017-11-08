@@ -34,7 +34,7 @@ public interface ProducerStoreDBCallback{
      *
      * @throws StoreUserCallbackException
      */
-    void update2faild(String msgKey, String infoMsg, Long costTime) throws StoreDBCallbackException;
+    void update2faild(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreDBCallbackException;
     
     /**
      * 获取需要重新发送的内容
