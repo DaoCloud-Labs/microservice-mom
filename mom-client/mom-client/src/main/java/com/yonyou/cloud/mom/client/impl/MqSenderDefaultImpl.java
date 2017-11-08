@@ -87,7 +87,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					LOGGER.debug("------发送消息开始------");
 					startTime = System.currentTimeMillis();
 					sendRabbitQ(exchange,routeKey, msgKey, data);
-
+					System.out.println(1/0);
 				} catch (Exception e) {
 					// 设置为失败
 					LOGGER.debug("------发送消息异常，调用消息存储失败的方法------");
@@ -121,12 +121,12 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
                 	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
                     message.getMessageProperties().setContentType("json");
                    
-                    msgStore.update2success(correlation);;
-                    return message;
+                   
                 } catch (Exception e) {
                     throw new AmqpException(e);
                 }
-
+                msgStore.update2success(correlation);;
+                return message;
                 
             }
         });
