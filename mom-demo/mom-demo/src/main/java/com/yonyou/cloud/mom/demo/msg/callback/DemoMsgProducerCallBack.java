@@ -52,12 +52,17 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 	}
 
 	@Override
-	public void update2faild(String msgKey, String infoMsg, Long costTime) throws StoreDBCallbackException {
+	public void update2faild(String msgKey, String infoMsg, Long costTime, String exchange, String routerKey,
+			String data, String bizClassName) throws StoreDBCallbackException {
 		ProducerMsg msg = new ProducerMsg();
 		msg.setStatus(StoreStatusEnum.PRODUCER_FAILD.getValue());
 		msg.setInfoMsg(infoMsg);
 		msg.setUpdateTime(new Date());
 		msg.setMsgKey(msgKey);
+		msg.setBizclassName(bizClassName);
+		msg.setExchange(exchange);
+		msg.setRouterKey(routerKey);
+		msg.setMsgContent(data);
 		msgMapper.updateByKey(msg);
 	}
 
@@ -80,6 +85,5 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 		  }
 		  return producerdtolist;
 	}
-
 
 }

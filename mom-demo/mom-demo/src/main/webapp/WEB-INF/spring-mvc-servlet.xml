@@ -3,6 +3,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
     xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
     xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx" 
+    xmlns:rabbit="http://www.springframework.org/schema/rabbit" 
+    
     xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
             http://www.springframework.org/schema/context 
@@ -14,7 +16,9 @@
             http://www.springframework.org/schema/mvc 
             http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
             http://www.springframework.org/schema/context 
-            http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+            http://www.springframework.org/schema/context/spring-context-4.0.xsd
+            http://www.springframework.org/schema/rabbit
+    		http://www.springframework.org/schema/rabbit/spring-rabbit-1.6.xsd">
 
 
 	<context:component-scan base-package="com.yonyou.cloud.*" />
@@ -48,8 +52,130 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>  
     </bean>  
     
+	
     <bean id="transactionManager"  
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
         <property name="dataSource" ref="dataSource" />  
     </bean>  
+    <!-- 事务控制   -->  
+	<tx:annotation-driven transaction-manager="transactionManager" />  
+    
+   	<import resource="classpath*:application-mq.xml" /> 
+    
+    
+    <!-- 
+    连接配置
+    <rabbit:connection-factory id="connectionFactory" 
+							    host="${spring.rabbitmq.host}" 
+							    username="${spring.rabbitmq.username}" 
+							    password="${spring.rabbitmq.password}" 
+							    port="${spring.rabbitmq.port}"
+							    connection-timeout="${spring.rabbitmq.connection-timeout}"
+							    channel-cache-size="${spring.rabbitmq.cache.channel.size}"
+							/>
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    spring template声明
+    <rabbit:template exchange="amqpExchange" id="rabbitTemplate" reply-timeout="5000" connection-factory="connectionFactory"  message-converter="messageConverter" />
+
+    消息对象json转换类
+   	<bean id = "messageConverter" class = "org.springframework.amqp.support.converter.JsonMessageConverter"></bean>
+   	
+   	<rabbit:queue id="pointsListenLoginQueue" name="points-login" durable="true" auto-delete="false" exclusive="false" />
+    
+    <rabbit:direct-exchange name="amqpExchange" durable="true" auto-delete="false" id="amqpExchange">
+    <rabbit:bindings>
+        <rabbit:binding queue="pointsListenLoginQueue" key="login"/>
+    </rabbit:bindings>
+	</rabbit:direct-exchange>
+	
+	    消息接收者  
+    <bean id="pointsListenLogin" class="com.yonyou.cloud.mom.demo.msg.listener.PointsListenLogin"></bean>  
+      
+    queue litener  观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象  
+     <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">  
+             <rabbit:listener queues="pointsListenLoginQueue" ref="pointsListenLogin"/>  
+    </rabbit:listener-container>
+    
+    <bean id = "mqSenderDefaultImpl" class = "com.yonyou.cloud.mom.client.impl.MqSenderDefaultImpl">
+		<property name="rabbitTemplate" ref="rabbitTemplate"/>
+	</bean> -->
+    
+    <!-- 
+	<bean id="cachingConnectionFactory"
+		class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
+		<property name = "host">
+			<value>${spring.rabbitmq.host}</value>
+		</property>
+		<property name = "port">
+			<value>${spring.rabbitmq.port}</value>
+		</property>
+		<property name = "username">
+			<value>${spring.rabbitmq.username}</value>
+		</property>
+		<property name = "password">
+			<value>${spring.rabbitmq.password}</value>
+		</property>
+		<property name = "connectionTimeout">
+			<value>${spring.rabbitmq.connection-timeout}</value>
+		</property>
+		<property name="channelCacheSize" value="25"/>
+	</bean>
+    
+	<bean id = "pointsListenLoginQueue" class = "org.springframework.amqp.core.Queue">
+		<constructor-arg index = "0">
+			<value>points-login</value>
+		</constructor-arg>
+		<constructor-arg index = "1">
+			<value>true</value>
+		</constructor-arg>
+	</bean>
+	
+    <bean id = "binding1" class = "org.springframework.amqp.core.Binding">
+		<constructor-arg index = "0"><value>points-login</value></constructor-arg>
+		<constructor-arg index = "1"><ref bean = "QUEUE"/></constructor-arg>
+		<constructor-arg index = "2"><value>event-exchange</value></constructor-arg>
+		<constructor-arg index = "3"><value>login</value></constructor-arg>
+		<constructor-arg index = "4">
+			<map>
+            </map>
+		</constructor-arg>
+	</bean>
+	
+    <bean id = "pointsListenLogin" class = "com.yonyou.cloud.mom.demo.msg.listener.PointsListenLogin"></bean>
+	
+	<bean id="MANUAL" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">    
+        <property name="staticField" value="org.springframework.amqp.core.AcknowledgeMode.MANUAL" />    
+    </bean>  
+	
+	<bean id="QUEUE" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">    
+        <property name="staticField" value="org.springframework.amqp.core.Binding.DestinationType.QUEUE" />    
+    </bean>  
+
+	<bean id="messageContainer1" class="org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer">
+		<property name="connectionFactory">
+			<ref bean="cachingConnectionFactory" />
+		</property>
+		<property name="queues">
+			<ref bean="pointsListenLoginQueue" />
+		</property>
+		<property name="exposeListenerChannel">
+			<value>true</value>
+		</property>
+		<property name="maxConcurrentConsumers"><value>5</value></property>
+		<property name="concurrentConsumers"><value>1</value></property>
+		<property name="acknowledgeMode" ref="MANUAL"/>
+		<property name="messageListener" ref="pointsListenLogin"/>
+	</bean>
+	
+	<bean id = "messageConverter" class = "org.springframework.amqp.support.converter.JsonMessageConverter"></bean>
+	
+	<bean id = "rabbitTemplate" class = "org.springframework.amqp.rabbit.core.RabbitTemplate">
+		<property name="connectionFactory" ref="cachingConnectionFactory" />
+		<property name="messageConverter" ref="messageConverter" />
+	</bean>
+	
+	<bean id = "mqSenderDefaultImpl" class = "com.yonyou.cloud.mom.client.impl.MqSenderDefaultImpl">
+		<property name="rabbitTemplate" ref="rabbitTemplate"/>
+	</bean> -->
 </beans>

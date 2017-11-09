@@ -764,6 +764,76 @@ public class ConsumerMsgExample {
             addCriterion("BIZCLASS_NAME not between", value1, value2, "bizclassName");
             return (Criteria) this;
         }
+
+        public Criteria andConsumerClassNameIsNull() {
+            addCriterion("CONSUMER_CLASS_NAME is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameIsNotNull() {
+            addCriterion("CONSUMER_CLASS_NAME is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameEqualTo(String value) {
+            addCriterion("CONSUMER_CLASS_NAME =", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameNotEqualTo(String value) {
+            addCriterion("CONSUMER_CLASS_NAME <>", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameGreaterThan(String value) {
+            addCriterion("CONSUMER_CLASS_NAME >", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameGreaterThanOrEqualTo(String value) {
+            addCriterion("CONSUMER_CLASS_NAME >=", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameLessThan(String value) {
+            addCriterion("CONSUMER_CLASS_NAME <", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameLessThanOrEqualTo(String value) {
+            addCriterion("CONSUMER_CLASS_NAME <=", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameLike(String value) {
+            addCriterion("CONSUMER_CLASS_NAME like", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameNotLike(String value) {
+            addCriterion("CONSUMER_CLASS_NAME not like", value, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameIn(List<String> values) {
+            addCriterion("CONSUMER_CLASS_NAME in", values, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameNotIn(List<String> values) {
+            addCriterion("CONSUMER_CLASS_NAME not in", values, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameBetween(String value1, String value2) {
+            addCriterion("CONSUMER_CLASS_NAME between", value1, value2, "consumerClassName");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumerClassNameNotBetween(String value1, String value2) {
+            addCriterion("CONSUMER_CLASS_NAME not between", value1, value2, "consumerClassName");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

@@ -36,6 +36,9 @@ public class ConsumerMsg {
     @Column(name = "BIZCLASS_NAME")
     private String bizclassName;
 
+    @Column(name = "CONSUMER_CLASS_NAME")
+    private String consumerClassName;
+
     /**
      * @return MSG_KEY
      */
@@ -174,5 +177,19 @@ public class ConsumerMsg {
      */
     public void setBizclassName(String bizclassName) {
         this.bizclassName = bizclassName;
+    }
+
+    /**
+     * @return CONSUMER_CLASS_NAME
+     */
+    public String getConsumerClassName() {
+        return consumerClassName;
+    }
+
+    /**
+     * @param consumerClassName
+     */
+    public void setConsumerClassName(String consumerClassName) {
+        this.consumerClassName = consumerClassName;
     }
 }

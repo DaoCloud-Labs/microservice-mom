@@ -32,8 +32,8 @@ public class BizService {
 		msg.setLoginName(name);
 		msg.setLoginTime(new Date().getTime());
 		
-		mqSender.send("event-exchange", "login", msg);
-		
+		mqSender.send("amqpExchange", "login", msg);
+		if(name.equals("interruption")) throw new RuntimeException();
 		return "success";
 	}
 	

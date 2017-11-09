@@ -11,7 +11,7 @@ public class PointsListenLogin extends AbstractConsumerListener<LoginMsg>{
 	private static int counter = 0;
 
 	@Override
-	protected void handleMessage(LoginMsg data) {
+	public void handleMessage(LoginMsg data) {
 		LOGGER.debug("监听到有人登录了，用户名："+data.getLoginName()+"，发送积分");
 		LOGGER.debug("count:{}",++counter);
 	}
