@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx" 
+    xmlns:rabbit="http://www.springframework.org/schema/rabbit" 
+    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+            http://www.springframework.org/schema/context 
+            http://www.springframework.org/schema/context/spring-context-4.0.xsd
+            http://www.springframework.org/schema/aop 
+            http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+            http://www.springframework.org/schema/tx 
+            http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+            http://www.springframework.org/schema/mvc 
+            http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+            http://www.springframework.org/schema/context 
+            http://www.springframework.org/schema/context/spring-context-4.0.xsd
+            http://www.springframework.org/schema/rabbit
+    		http://www.springframework.org/schema/rabbit/spring-rabbit-1.6.xsd">
+
+
+	<context:component-scan base-package="com.yonyou.cloud.*" />
+	<context:property-placeholder location="classpath:*.properties"/>  
+    
+    
+    <!-- 连接配置 -->
+    <rabbit:connection-factory id="connectionFactory" 
+							    host="${spring.rabbitmq.host}" 
+							    username="${spring.rabbitmq.username}" 
+							    password="${spring.rabbitmq.password}" 
+							    port="${spring.rabbitmq.port}"
+							    connection-timeout="${spring.rabbitmq.connection-timeout}"
+							    channel-cache-size="${spring.rabbitmq.cache.channel.size}"
+							/>
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!-- spring template声明-->
+    <rabbit:template exchange="amqpExchange" id="rabbitTemplate" connection-factory="connectionFactory"  message-converter="messageConverter" />
+
+    <!-- 消息对象json转换类 -->
+   	<bean id = "messageConverter" class = "org.springframework.amqp.support.converter.JsonMessageConverter"></bean>
+   	
+   	<rabbit:queue id="pointsListenLoginQueue" name="points-login" durable="true" auto-delete="false" exclusive="false" />
+   	<rabbit:queue id="userLogoutQueue" name="user-Logout" durable="true" auto-delete="false" exclusive="false" />
+    
+    <rabbit:direct-exchange name="amqpExchange" durable="true" auto-delete="false" id="amqpExchange">
+    <rabbit:bindings>
+        <rabbit:binding queue="pointsListenLoginQueue" key="login"/>
+        <rabbit:binding queue="userLogoutQueue" key="logout"/>
+    </rabbit:bindings>
+	</rabbit:direct-exchange>
+	
+	    <!-- 消息接收者 -->  
+    <bean id="pointsListenLogin" class="com.yonyou.cloud.mom.demo.msg.listener.PointsListenLogin"></bean>  
+      
+    <!-- queue litener  观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象-->  
+     <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">  
+             <rabbit:listener queues="pointsListenLoginQueue" ref="pointsListenLogin"/>  
+             <rabbit:listener queues="userLogoutQueue" ref="pointsListenLogin"/>  
+    </rabbit:listener-container>
+    
+    <bean id = "mqSenderDefaultImpl" class = "com.yonyou.cloud.mom.client.impl.MqSenderDefaultImpl">
+		<property name="rabbitTemplate" ref="rabbitTemplate"/>
+	</bean>
+</beans>

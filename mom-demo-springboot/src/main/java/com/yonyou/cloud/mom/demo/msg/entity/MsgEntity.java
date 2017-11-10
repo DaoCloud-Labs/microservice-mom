@@ -4,8 +4,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 @Entity
-@Table(name="MON_DATA")
+@DynamicUpdate
+@DynamicInsert
+@Table(name="producer_msg")
 public class MsgEntity {
 	
 	public MsgEntity() {
@@ -29,6 +34,8 @@ public class MsgEntity {
 	private String infoMsg;
 	
 	private Integer retryCount;
+	
+	private String bizClassName;
 
 	public String getMsgKey() {
 		return msgKey;
@@ -107,6 +114,14 @@ public class MsgEntity {
 		return "MsgEntity [msgKey=" + msgKey + ", msgContent=" + msgContent + ", status=" + status + ", createTime="
 				+ createTime + ", updateTime=" + updateTime + ", exchange=" + exchange + ", routerKey=" + routerKey
 				+ ", infoMsg=" + infoMsg + ", retryCount=" + retryCount + "]";
+	}
+
+	public String getBizClassName() {
+		return bizClassName;
+	}
+
+	public void setBizClassName(String bizClassName) {
+		this.bizClassName = bizClassName;
 	}
 	
 	

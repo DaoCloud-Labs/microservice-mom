@@ -1,5 +1,8 @@
 package com.yonyou.cloud.mom.core.store;
 
+import java.util.List;
+
+import com.yonyou.cloud.mom.core.dto.ConsumerDto;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
 
 /**
@@ -33,7 +36,7 @@ public interface ConsumerMsgStore {
      * @param msgKey
      * @throws StoreException
      */
-    void updateMsgProcessing(String msgKey) throws StoreException;
+    void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreException;
     
     
     /**
@@ -52,4 +55,12 @@ public interface ConsumerMsgStore {
      * @throws StoreException
      */
     void updateMsgFaild(String msgKey) throws StoreException;
+    
+    
+    /**
+     * 获取需要重新消费的信息
+     * @param status
+     * @return
+     */
+    public List<ConsumerDto> selectReConsumerList(Integer status);
 }

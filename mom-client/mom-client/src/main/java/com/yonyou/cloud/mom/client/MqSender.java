@@ -20,4 +20,10 @@ public interface MqSender {
 	 * @param data
 	 */
 	void justSend(String exchange, String routeKey, Object data);
+	
+	
+	/**
+	 * 消息重新发送
+	 */
+	void resend();
 }

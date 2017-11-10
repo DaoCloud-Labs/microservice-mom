@@ -1,11 +1,14 @@
 package com.yonyou.cloud.mom.core.store.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import com.yonyou.cloud.mom.core.dto.ConsumerDto;
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.callback.ConsumerStoreDbCallback;
-import com.yonyou.cloud.mom.core.store.callback.ProducerStoreDBCallback;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
 import com.yonyou.cloud.mom.core.util.SpringUtil;
 
@@ -15,6 +18,7 @@ import com.yonyou.cloud.mom.core.util.SpringUtil;
  * @author BENJAMIN
  *
  */
+@Component
 public class DbStoreConsumerMsg implements ConsumerMsgStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbStoreConsumerMsg.class);
@@ -24,7 +28,8 @@ public class DbStoreConsumerMsg implements ConsumerMsgStore {
     	ConsumerStoreDbCallback callback = (ConsumerStoreDbCallback) SpringUtil.getBean(ConsumerStoreDbCallback.class);
     	return callback;
     }
-
+    
+  
 
 	@Override
 	public boolean exist(String msgKey) throws StoreException {
@@ -44,9 +49,9 @@ public class DbStoreConsumerMsg implements ConsumerMsgStore {
 
 
 	@Override
-	public void updateMsgProcessing(String msgKey) throws StoreException {
+	public void updateMsgProcessing(String msgKey,String data,String exchange,String queue,String consumerClassName,String bizClassName) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
-		callback.updateMsgProcessing(msgKey);
+		callback.updateMsgProcessing(msgKey,data,exchange,queue,consumerClassName,bizClassName);
 	}
 
 
@@ -64,4 +69,10 @@ public class DbStoreConsumerMsg implements ConsumerMsgStore {
 		callback.updateMsgFaild(msgKey);
 		
 	}
+	
+	@Override
+	public List<ConsumerDto> selectReConsumerList(Integer status){
+		ConsumerStoreDbCallback callback = getCallBack();
+		return callback.selectReConsumerList(status);
+	 }
 }

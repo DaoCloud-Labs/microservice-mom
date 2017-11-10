@@ -22,6 +22,7 @@ public class BizService {
 	@Autowired
 	private BizDao bizDao;
 	
+	
 	public String saveLoginUser(String name) throws InterruptedException{
 		
 		BizEntity e = new BizEntity();
