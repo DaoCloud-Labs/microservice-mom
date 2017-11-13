@@ -1,19 +1,12 @@
 pom文件
 
-配置pom包，主要是进入消息中间件mom-client 和对spring-boot-starter-amqp的支持
-		因为这里用到JPA 所有加入JPA相关支持
+配置pom包，主要是进入消息中间件mom-client 和对spring-boot-starter-amqp的支持 因为这里用到JPA 所有加入JPA相关支持
 
-
-``` 
-	<dependency>
+<dependency>
 			<groupId>com.yonyou.cloud</groupId>
 			<artifactId>mom-client</artifactId>
 			<version>1.0-SNAPSHOT</version>
     </dependency>
-```
-
-
-``` 
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -87,17 +80,10 @@ pom文件
 
 
 </project>
-``` 
-
-
-
-
 配置文件
 
-因为本demo持久层用的spring data JPA 所以有关于JPA相关配置
-application.properties
+因为本demo持久层用的spring data JPA 所以有关于JPA相关配置 application.properties
 
-``` 
 spring.application.name=mom-demo-springboot
 server.port=8181
 spring.rabbitmq.host=10.180.8.171
@@ -126,25 +112,16 @@ logging.level.org.springframework.orm.jpa=debug
 jobs.resend.schedule=0/30 * * * * *
 # Re-consume the task
 jobs.reconsumer.schedule=0/30 * * * * *
-
-``` 
-
-
 消息中间件初始化配置
 
 对发消息者、队列、收消息者 相关配置
 
-交换机(Exchange)
-交换机有四种类型：Direct, topic, Headers and Fanout 可根据具体场景需要配置;这里我们选着direct "先匹配, 再投送"即在绑定时设定一个 routing_key, 消息的routing_key 匹配时, 才会被交换器投送到绑定的队列中去.
- 
-创建连接 
-一般使用RabbitTemplate 和AmqpTemplate创建链接，
-他们的的关系如下：RabbitTemplate   implements  RabbitOperations ；
-				  RabbitOperations  extends     AmqpTemplate
-我们这里使用RabbitTemplate 创建连接
+交换机(Exchange) 交换机有四种类型：Direct, topic, Headers and Fanout 可根据具体场景需要配置;这里我们选着direct "先匹配, 再投送"即在绑定时设定一个 routing_key, 消息的routing_key 匹配时, 才会被交换器投送到绑定的队列中去.
+
+创建连接 一般使用RabbitTemplate 和AmqpTemplate创建链接， 他们的的关系如下：RabbitTemplate implements RabbitOperations ； RabbitOperations extends AmqpTemplate 我们这里使用RabbitTemplate 创建连接
 
 初始化生产者相关实现类
-``` 				  
+
 package com.yonyou.cloud.mom.demo.config;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
@@ -224,11 +201,8 @@ public class MqConfig {
 	}
  
 }
-
-``` 
-
 实现生产者相关接口
-``` 
+
 package com.yonyou.cloud.mom.demo.msg.callback;
 
 import java.util.ArrayList;
@@ -326,25 +300,20 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 	  }
 
 }
-``` 
-
 消息发送
-		
-		注入发送mq的默认实现
-		@Autowired
-		private MqSender mqSender;
-		
-		通过send方法发送 （第一个参数是交换机名称；第二个参数是队列名称；第三个参数是发送的对象）
-		
-		LoginMsg msg = new LoginMsg();
-		msg.setLoginName(name);
-		msg.setLoginTime(new Date().getTime());
-		mqSender.send("event-exchange", "login", msg);
 
+注入发送mq的默认实现
+	@Autowired
+	private MqSender mqSender;
+	
+	通过send方法发送 （第一个参数是交换机名称；第二个参数是队列名称；第三个参数是发送的对象）
+	
+	LoginMsg msg = new LoginMsg();
+	msg.setLoginName(name);
+	msg.setLoginTime(new Date().getTime());
+	mqSender.send("event-exchange", "login", msg);
+消费者相关 消费者需要继承中间件 AbstractConsumerListener类 实现handleMessage接口（拿到消息，实现相关消息消费逻辑）
 
-消费者相关
-消费者需要继承中间件 AbstractConsumerListener类 实现handleMessage接口（拿到消息，实现相关消息消费逻辑）
-``` 
 package com.yonyou.cloud.mom.demo.msg.listener;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -369,12 +338,8 @@ public class PointsListenLogin extends AbstractConsumerListener<LoginMsg>{
 	}
 
 }
-
-``` 
-
-
 实现消费者相关接口
-``` 
+
 package com.yonyou.cloud.mom.demo.msg.callback;
 
 import java.util.ArrayList;
@@ -492,79 +457,48 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 	
 
 }
-``` 
-
-
 生产者数据操作接口ProducerStoreDBCallback方法以及参数说明
- 
- 
-    //保存消息（消息key,消息内容，交换机名称，队列名称，消息对象类名）
-    void saveMsgData(String msgKey, String data, String exchange, String routerKey,String bizClassName) throws StoreDBCallbackException;   
-   
-   //发送成功 （消息key）
-    void update2success(String msgKey)throws StoreDBCallbackException;
 
-    //处理为初始化失败 （消息key,消息内容，发送时长，交换机名称，队列名称，消息内容，消息对象类名）
-    void update2faild(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreDBCallbackException;
-    
-    //获取需要重新发送的内容（消息状态）
-    public List<ProducerDto> selectResendList(Integer status);
- 
- 
- 
-消费者数据操作接口ConsumerStoreDbCallback方法及参数说明  
+//保存消息（消息key,消息内容，交换机名称，队列名称，消息对象类名）
+void saveMsgData(String msgKey, String data, String exchange, String routerKey,String bizClassName) throws StoreDBCallbackException;
+//发送成功 （消息key） void update2success(String msgKey)throws StoreDBCallbackException;
 
-    
-	//根据msgkey判断消息是否已经存在（消息key） 
-    boolean exist(String msgKey) throws StoreDBCallbackException;
+//处理为初始化失败 （消息key,消息内容，发送时长，交换机名称，队列名称，消息内容，消息对象类名）
+void update2faild(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreDBCallbackException;
 
-    //根据msgkey判断消息是否在处理中 （消息key）
-    boolean isProcessing(String msgKey) throws StoreDBCallbackException;
-    
-    
-    //更新消息状态为处理中 （消息key，消息内容，交换机名称，队列名称，消费者对象名称，消息体对象名称）
-    void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException;
-    
-    
-    // 更新为成功 （消息key）
-    void updateMsgSuccess(String msgKey) throws StoreDBCallbackException;
-    
-    
-    //更新为失败 （消息key）
-    void updateMsgFaild(String msgKey) throws StoreDBCallbackException;
-    
-    //获取需要重新消费的内容 （消息状态）
-    public List<ConsumerDto> selectReConsumerList(Integer status);
- 
+//获取需要重新发送的内容（消息状态）
+public List<ProducerDto> selectResendList(Integer status);
+消费者数据操作接口ConsumerStoreDbCallback方法及参数说明
 
+//根据msgkey判断消息是否已经存在（消息key） 
+boolean exist(String msgKey) throws StoreDBCallbackException;
+
+//根据msgkey判断消息是否在处理中 （消息key）
+boolean isProcessing(String msgKey) throws StoreDBCallbackException;
+
+
+//更新消息状态为处理中 （消息key，消息内容，交换机名称，队列名称，消费者对象名称，消息体对象名称）
+void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException;
+
+
+// 更新为成功 （消息key）
+void updateMsgSuccess(String msgKey) throws StoreDBCallbackException;
+
+
+//更新为失败 （消息key）
+void updateMsgFaild(String msgKey) throws StoreDBCallbackException;
+
+//获取需要重新消费的内容 （消息状态）
+public List<ConsumerDto> selectReConsumerList(Integer status);
 消息中间件消息状态StoreStatusEnum枚举
- 
- 	PRODUCER_INIT(0),      消息发送初始化
-	PRODUCER_SUCCESS(1),   消息发送成功
-	PRODUCER_FAILD(2),     消息发送失败
-	CONSUMER_PROCESS(100), 消息消费初始化
-	CONSUMER_SUCCESS(101), 消息消费成功
-	CONSUMER_FAILD(102);   消息消费失败
-	
-ProducerDto
-    private String msgKey;
-	private String msgContent;
-	private Integer status;
-	private String exchange;
-	private String routerKey;
-	private String bizClassName;
-	
-消费者 ConsumerDto  
-	private String msgKey;
-	private String msgContent;
-	private Integer status;
-	private String infoMsg;
-	private Integer retryCount;
-	private String consumerClassName;//消费者类名
-	private String bizClassName;
 
+PRODUCER_INIT(0),      消息发送初始化
+PRODUCER_SUCCESS(1),   消息发送成功
+PRODUCER_FAILD(2),     消息发送失败
+CONSUMER_PROCESS(100), 消息消费初始化
+CONSUMER_SUCCESS(101), 消息消费成功
+CONSUMER_FAILD(102);   消息消费失败
+ProducerDto private String msgKey; private String msgContent; private Integer status; private String exchange; private String routerKey; private String bizClassName;
 
-
-
-
-
+消费者 ConsumerDto
+private String msgKey; private String msgContent; private Integer status; private String infoMsg; private Integer retryCount; private String consumerClassName;//消费者类名 private String bizClassName;
