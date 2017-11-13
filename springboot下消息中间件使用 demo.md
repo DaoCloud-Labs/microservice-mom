@@ -1,4 +1,4 @@
-pom文件
+### pom文件
 
 配置pom包，主要是进入消息中间件mom-client 和对spring-boot-starter-amqp的支持
 		因为这里用到JPA 所有加入JPA相关支持
@@ -92,7 +92,7 @@ pom文件
 
 
 
-配置文件
+### 配置文件
 
 因为本demo持久层用的spring data JPA 所以有关于JPA相关配置
 application.properties
@@ -130,7 +130,7 @@ jobs.reconsumer.schedule=0/30 * * * * *
 ``` 
 
 
-消息中间件初始化配置
+### 消息中间件初始化配置
 
 对发消息者、队列、收消息者 相关配置
 
@@ -227,7 +227,7 @@ public class MqConfig {
 
 ``` 
 
-实现生产者相关接口
+### 实现生产者相关接口
 ``` 
 package com.yonyou.cloud.mom.demo.msg.callback;
 
@@ -328,7 +328,7 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 }
 ``` 
 
-消息发送
+##### #### 消息发送
 		
 		注入发送mq的默认实现
 		@Autowired
@@ -342,7 +342,7 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 		mqSender.send("event-exchange", "login", msg);
 
 
-消费者相关
+#### 消费者相关
 消费者需要继承中间件 AbstractConsumerListener类 实现handleMessage接口（拿到消息，实现相关消息消费逻辑）
 ``` 
 package com.yonyou.cloud.mom.demo.msg.listener;
@@ -373,7 +373,7 @@ public class PointsListenLogin extends AbstractConsumerListener<LoginMsg>{
 ``` 
 
 
-实现消费者相关接口
+### 实现消费者相关接口
 ``` 
 package com.yonyou.cloud.mom.demo.msg.callback;
 
@@ -495,10 +495,12 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 ``` 
 
 
-生产者数据操作接口ProducerStoreDBCallback方法以及参数说明
+### 生产者数据操作接口ProducerStoreDBCallback方法以及参数说明
  
  
-    //保存消息（消息key,消息内容，交换机名称，队列名称，消息对象类名）
+
+```
+//保存消息（消息key,消息内容，交换机名称，队列名称，消息对象类名）
     void saveMsgData(String msgKey, String data, String exchange, String routerKey,String bizClassName) throws StoreDBCallbackException;   
    
    //发送成功 （消息key）
@@ -509,13 +511,17 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
     
     //获取需要重新发送的内容（消息状态）
     public List<ProducerDto> selectResendList(Integer status);
+```
+
  
  
  
-消费者数据操作接口ConsumerStoreDbCallback方法及参数说明  
+### 消费者数据操作接口ConsumerStoreDbCallback方法及参数说明  
 
     
-	//根据msgkey判断消息是否已经存在（消息key） 
+
+```
+    //根据msgkey判断消息是否已经存在（消息key） 
     boolean exist(String msgKey) throws StoreDBCallbackException;
 
     //根据msgkey判断消息是否在处理中 （消息key）
@@ -535,33 +541,47 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
     
     //获取需要重新消费的内容 （消息状态）
     public List<ConsumerDto> selectReConsumerList(Integer status);
+```
+
  
 
-消息中间件消息状态StoreStatusEnum枚举
+## # 消息中间件消息状态StoreStatusEnum枚举
  
- 	PRODUCER_INIT(0),      消息发送初始化
+
+```
+    PRODUCER_INIT(0),      消息发送初始化
 	PRODUCER_SUCCESS(1),   消息发送成功
 	PRODUCER_FAILD(2),     消息发送失败
 	CONSUMER_PROCESS(100), 消息消费初始化
 	CONSUMER_SUCCESS(101), 消息消费成功
 	CONSUMER_FAILD(102);   消息消费失败
+```
+
 	
-ProducerDto
-    private String msgKey;
+### ProducerDto
+
+```
+private String msgKey;
 	private String msgContent;
 	private Integer status;
 	private String exchange;
 	private String routerKey;
 	private String bizClassName;
+```
+
 	
-消费者 ConsumerDto  
-	private String msgKey;
+### 消费者 ConsumerDto  
+
+```
+    private String msgKey;
 	private String msgContent;
 	private Integer status;
 	private String infoMsg;
 	private Integer retryCount;
 	private String consumerClassName;//消费者类名
 	private String bizClassName;
+```
+
 
 
 
