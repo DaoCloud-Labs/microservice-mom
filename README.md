@@ -24,7 +24,7 @@ springboot:1.5.7
 
 ## 使用方法
 
-[springboot使用说明](https://github.com/yonyou-auto-dev/microservice-mom/blob/dev/Springboot.md)
+[springboot使用说明](https://github.com/yonyou-auto-dev/microservice-mom/blob/dev/springboot下消息中间件使用 demo.md)
 
 spring xml 待补充
 
