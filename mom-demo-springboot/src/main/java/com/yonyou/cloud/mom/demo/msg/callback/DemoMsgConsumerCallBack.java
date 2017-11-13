@@ -34,7 +34,7 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 
 	@Override
 	public boolean isProcessing(String msgKey) throws StoreDBCallbackException {
-		MsgEntity msg = consumerDao.findByMsgKeyAndStatus(msgKey, StoreStatusEnum.CONSUMER_PROCESS.getValue());
+		ConsumerEntity msg = consumerDao.findByMsgKeyAndStatus(msgKey, StoreStatusEnum.CONSUMER_PROCESS.getValue());
 		if(msg==null){
 //			consumerDao.findOne(msgKey);
 //			ConsumerEntity entity=new ConsumerEntity();
