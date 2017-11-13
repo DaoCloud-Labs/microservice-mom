@@ -74,7 +74,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	@Override
 	public void justSend(String exchange, String routeKey, Object data) {
 		// TODO Auto-generated method stub
-
+		getRabbitOperations().convertAndSend(exchange,routeKey, data);
 	}
 
 	private void sendToMQ(final String exchange, final String routeKey, final String msgKey, final Object data) {

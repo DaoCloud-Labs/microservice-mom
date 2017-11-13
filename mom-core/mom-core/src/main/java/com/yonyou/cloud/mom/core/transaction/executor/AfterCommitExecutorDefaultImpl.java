@@ -31,7 +31,8 @@ public class AfterCommitExecutorDefaultImpl extends TransactionExecutorBaseImpl 
             Runnable runnable = threadRunnables.get(i);
             LOGGER.debug("Executing runnable {}", runnable);
             try {
-                runnable.run();
+            	executor.execute(runnable);
+//                runnable.run();
             } catch (RuntimeException e) {
                 LOGGER.error("Failed to execute runnable " + runnable, e);
             }
