@@ -1,6 +1,6 @@
 ### pom文件
 
-配置pom包，主要是进入消息中间件mom-client 和对spring-boot-starter-amqp的支持
+配置pom包，主要是引入消息中间件mom-client 和对spring-boot-starter-amqp的支持
 		因为这里用到JPA 所有加入JPA相关支持
 
 

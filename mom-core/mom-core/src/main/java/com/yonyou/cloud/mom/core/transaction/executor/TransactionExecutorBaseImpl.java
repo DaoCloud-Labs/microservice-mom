@@ -2,6 +2,8 @@ package com.yonyou.cloud.mom.core.transaction.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +16,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author BENJAMIN
  *
  */
-public class TransactionExecutorBaseImpl extends TransactionSynchronizationAdapter implements TransactionExecutor {
+public abstract class TransactionExecutorBaseImpl extends TransactionSynchronizationAdapter implements TransactionExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionExecutorBaseImpl.class);
     protected final ThreadLocal<List<Runnable>> RUNNABLES = new ThreadLocal<List<Runnable>>();
-    
+    protected ExecutorService executor = Executors.newFixedThreadPool(10);
+
     
 	/**
 	 * 注册到事务处理器
@@ -29,7 +32,8 @@ public class TransactionExecutorBaseImpl extends TransactionSynchronizationAdapt
 
 	        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
 	            LOGGER.debug("事务同步未激活. 直接开始执行线程 {}", command);
-	            command.run();
+	            executor.execute(command);
+//	            command.run();
 	            return;
 	        }
 	        List<Runnable> threadRunnables = RUNNABLES.get();

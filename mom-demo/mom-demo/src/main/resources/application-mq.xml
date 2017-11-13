@@ -56,7 +56,7 @@
     <bean id="pointsListenLogin" class="com.yonyou.cloud.mom.demo.msg.listener.PointsListenLogin"></bean>  
       
     <!-- queue litener  观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象-->  
-     <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">  
+     <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual" concurrency="5" prefetch="5">  
              <rabbit:listener queues="pointsListenLoginQueue" ref="pointsListenLogin"/>  
              <rabbit:listener queues="userLogoutQueue" ref="pointsListenLogin"/>  
     </rabbit:listener-container>
