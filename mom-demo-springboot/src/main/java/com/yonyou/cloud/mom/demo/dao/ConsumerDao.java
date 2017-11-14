@@ -16,7 +16,7 @@ public interface ConsumerDao extends JpaRepository<ConsumerEntity, String>{
 	@Query("select m from ConsumerEntity m where m.status=?1")
 	public List<ConsumerEntity> findbystatus(Integer status);
 
-	public MsgEntity findByMsgKeyAndStatus(String msgKey , Integer status);
+	public ConsumerEntity findByMsgKeyAndStatus(String msgKey , Integer status);
  
 }
 
