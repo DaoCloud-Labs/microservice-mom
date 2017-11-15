@@ -1,8 +1,13 @@
 package com.yonyou.cloud.mom.demo.msg.entity;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -19,22 +24,30 @@ public class MsgEntity {
 	@Id
 	private String msgKey;
 	
+	@Column(columnDefinition = "mediumtext")
 	private String msgContent;
 	
+	@Column(nullable = false)
 	private Integer status;
 	
-	private Long createTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createTime;
 	
-	private Long updateTime;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updateTime;
+	
+	@Column(nullable = false)
 	private String exchange;
 	
+	@Column(nullable = false)
 	private String routerKey;
 	
 	private String infoMsg;
 	
 	private Integer retryCount;
 	
+	@Column(nullable = false)
 	private String bizClassName;
 
 	public String getMsgKey() {
@@ -60,20 +73,21 @@ public class MsgEntity {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+ 
 
-	public Long getCreateTime() {
+	public Date getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(Long createTime) {
+	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
 
-	public Long getUpdateTime() {
+	public Date getUpdateTime() {
 		return updateTime;
 	}
 
-	public void setUpdateTime(Long updateTime) {
+	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
 
@@ -109,12 +123,7 @@ public class MsgEntity {
 		this.retryCount = retryCount;
 	}
 
-	@Override
-	public String toString() {
-		return "MsgEntity [msgKey=" + msgKey + ", msgContent=" + msgContent + ", status=" + status + ", createTime="
-				+ createTime + ", updateTime=" + updateTime + ", exchange=" + exchange + ", routerKey=" + routerKey
-				+ ", infoMsg=" + infoMsg + ", retryCount=" + retryCount + "]";
-	}
+	
 
 	public String getBizClassName() {
 		return bizClassName;
@@ -123,6 +132,14 @@ public class MsgEntity {
 	public void setBizClassName(String bizClassName) {
 		this.bizClassName = bizClassName;
 	}
+	
+	@Override
+	public String toString() {
+		return "MsgEntity [msgKey=" + msgKey + ", msgContent=" + msgContent + ", status=" + status + ", createTime="
+				+ createTime + ", updateTime=" + updateTime + ", exchange=" + exchange + ", routerKey=" + routerKey
+				+ ", infoMsg=" + infoMsg + ", retryCount=" + retryCount + "]";
+	}
+
 	
 	
 	
