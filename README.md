@@ -30,7 +30,7 @@ Spring:4.0+
 
 [springmvc使用说明](https://github.com/yonyou-auto-dev/microservice-mom/blob/dev/Springmvc.md)
 
-sql脚本
+## 数据库sql执行脚本
 
 SET FOREIGN_KEY_CHECKS=0;
 
