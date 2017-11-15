@@ -69,6 +69,13 @@
 		  <version>2.4</version>
 		  <classifier>jdk15</classifier>
 		</dependency>
+		
+		
+		<dependency>
+			<groupId>com.yonyou.cloud</groupId>
+			<artifactId>track</artifactId>
+			<version>1.0.0</version>
+		</dependency>
          
 	</dependencies>
 </project>

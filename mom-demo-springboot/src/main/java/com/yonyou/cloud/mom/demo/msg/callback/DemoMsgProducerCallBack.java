@@ -41,7 +41,7 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 			msg.setRouterKey(routerKey);
 			msg.setStatus(StoreStatusEnum.PRODUCER_INIT.getValue());
 			msg.setRetryCount(0);
-			msg.setCreateTime(new Date().getTime());
+			msg.setCreateTime(new Date());
 			msg.setBizClassName(bizClassName);
 			msg.setMsgContent(data);
 			msgDao.save(msg);
@@ -64,7 +64,7 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 		msg.setMsgKey(msgKey);
 		msg.setStatus(StoreStatusEnum.PRODUCER_FAILD.getValue());
 		msg.setInfoMsg(infoMsg);
-		msg.setUpdateTime(new Date().getTime());
+		msg.setUpdateTime(new Date());
 		msg.setBizClassName(bizClassName);
 		msg.setExchange(exchange);
 		msg.setRouterKey(routerKey);

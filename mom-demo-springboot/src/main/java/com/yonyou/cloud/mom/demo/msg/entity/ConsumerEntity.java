@@ -1,8 +1,13 @@
 package com.yonyou.cloud.mom.demo.msg.entity;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -19,24 +24,33 @@ public class ConsumerEntity {
 	@Id
 	private String msgKey;
 	
+	@Column(columnDefinition = "mediumtext")
 	private String msgContent;
 	
+	@Column(nullable = true)
 	private Integer status;
 	
-	private Long createTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createTime;
 	
-	private Long updateTime;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updateTime;
+	
+	@Column(nullable = true)
 	private String exchange;
 	
+	@Column(nullable = true)
 	private String routerKey;
 	
 	private String infoMsg;
 	
 	private Integer retryCount;
 	
+	@Column(nullable = true)
 	private String consumerClassName;//消费者类名
 	
+	@Column(nullable = true)
 	private String bizClassName;
 
 	public String getMsgKey() {
@@ -63,19 +77,19 @@ public class ConsumerEntity {
 		this.status = status;
 	}
 
-	public Long getCreateTime() {
+	public Date getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(Long createTime) {
+	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
 
-	public Long getUpdateTime() {
+	public Date getUpdateTime() {
 		return updateTime;
 	}
 
-	public void setUpdateTime(Long updateTime) {
+	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
 

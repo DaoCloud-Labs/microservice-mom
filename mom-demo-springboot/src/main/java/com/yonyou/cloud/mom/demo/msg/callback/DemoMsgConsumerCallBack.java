@@ -14,7 +14,6 @@ import com.yonyou.cloud.mom.core.store.callback.ConsumerStoreDbCallback;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
 import com.yonyou.cloud.mom.demo.dao.ConsumerDao;
 import com.yonyou.cloud.mom.demo.msg.entity.ConsumerEntity;
-import com.yonyou.cloud.mom.demo.msg.entity.MsgEntity;
 
 @Service
 @Transactional
@@ -51,7 +50,7 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 			ConsumerEntity msgnew=new ConsumerEntity();
 			msgnew.setMsgKey(msgKey);
 			msgnew.setStatus(StoreStatusEnum.CONSUMER_PROCESS.getValue());
-			msgnew.setUpdateTime(new Date().getTime());
+			msgnew.setUpdateTime(new Date());
 			msgnew.setMsgContent(data);
 			msgnew.setExchange(exchange);
 			msgnew.setRouterKey(routerKey);
@@ -69,7 +68,7 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		ConsumerEntity msg = consumerDao.findOne(msgKey);
 		if(msg!=null){
 			msg.setStatus(StoreStatusEnum.CONSUMER_SUCCESS.getValue());
-			msg.setUpdateTime(new Date().getTime());
+			msg.setUpdateTime(new Date());
 			consumerDao.save(msg);
 		}else{
 			throw new StoreDBCallbackException("can not find msg "+msgKey);
@@ -81,7 +80,7 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		ConsumerEntity msg = consumerDao.findOne(msgKey);
 		if(msg!=null){
 			msg.setStatus(StoreStatusEnum.CONSUMER_FAILD.getValue());
-			msg.setUpdateTime(new Date().getTime());
+			msg.setUpdateTime(new Date());
 			consumerDao.save(msg);
 		}else{
 			throw new StoreDBCallbackException("can not find msg "+msgKey);
