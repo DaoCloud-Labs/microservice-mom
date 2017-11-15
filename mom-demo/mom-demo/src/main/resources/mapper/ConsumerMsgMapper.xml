@@ -14,7 +14,7 @@
     <result column="ROUTER_KEY" jdbcType="VARCHAR" property="routerKey" />
     <result column="INFO_MSG" jdbcType="VARCHAR" property="infoMsg" />
     <result column="RETRY_COUNT" jdbcType="INTEGER" property="retryCount" />
-    <result column="BIZCLASS_NAME" jdbcType="VARCHAR" property="bizclassName" />
+    <result column="BIZ_CLASS_NAME" jdbcType="VARCHAR" property="bizclassName" />
     <result column="CONSUMER_CLASS_NAME" jdbcType="VARCHAR" property="consumerClassName" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -86,7 +86,7 @@
       WARNING - @mbggenerated
     -->
     MSG_KEY, MSG_CONTENT, STATUS, CREATE_TIME, UPDATE_TIME, EXCHANGE, ROUTER_KEY, INFO_MSG, 
-    RETRY_COUNT, BIZCLASS_NAME, CONSUMER_CLASS_NAME
+    RETRY_COUNT, BIZ_CLASS_NAME, CONSUMER_CLASS_NAME
   </sql>
   <select id="selectByExample" parameterType="com.yonyou.cloud.mom.demo.entity.ConsumerMsgExample" resultMap="BaseResultMap">
     <!--
@@ -157,7 +157,7 @@
         RETRY_COUNT = #{record.retryCount,jdbcType=INTEGER},
       </if>
       <if test="record.bizclassName != null">
-        BIZCLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR},
+        BIZ_CLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR},
       </if>
       <if test="record.consumerClassName != null">
         CONSUMER_CLASS_NAME = #{record.consumerClassName,jdbcType=VARCHAR},
@@ -181,7 +181,7 @@
       ROUTER_KEY = #{record.routerKey,jdbcType=VARCHAR},
       INFO_MSG = #{record.infoMsg,jdbcType=VARCHAR},
       RETRY_COUNT = #{record.retryCount,jdbcType=INTEGER},
-      BIZCLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR},
+      BIZ_CLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR},
       CONSUMER_CLASS_NAME = #{record.consumerClassName,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -231,7 +231,7 @@
         RETRY_COUNT = #{retryCount,jdbcType=INTEGER},
       </if>
       <if test="bizclassName != null">
-        BIZCLASS_NAME = #{bizclassName,jdbcType=VARCHAR},
+        BIZ_CLASS_NAME = #{bizclassName,jdbcType=VARCHAR},
       </if>
       <if test="consumerClassName != null">
          CONSUMER_CLASS_NAME = #{consumerClassName,jdbcType=VARCHAR},
@@ -270,7 +270,7 @@
         RETRY_COUNT,
       </if>
       <if test="bizclassName != null">
-        BIZCLASS_NAME,
+        BIZ_CLASS_NAME,
       </if>
       <if test="consumerClassName != null">
         CONSUMER_CLASS_NAME,

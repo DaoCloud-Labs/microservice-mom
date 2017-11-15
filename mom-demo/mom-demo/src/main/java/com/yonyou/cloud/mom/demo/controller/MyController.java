@@ -70,7 +70,7 @@ public class MyController {
 		logger.warn(message);
     }  
 
-	@RequestMapping("/test")
+	@RequestMapping("/testConcurrency")
 	@ResponseBody
 	public String test() {
 		int size = 10;
@@ -88,10 +88,39 @@ public class MyController {
 		return "done";
 	}
 	
+	@RequestMapping("/testBatch")
+	@ResponseBody
+	public String testBatch() {
+		int size = 1000;
+		long timeMillis = System.currentTimeMillis();
+		for(int i = 0; i<size; i++){
+			LoginMsg msg = new LoginMsg();
+			msg.setLoginName(UUID.randomUUID().toString());
+			msg.setLoginTime(new Date().getTime());
+			mqSender.send("event-exchange", "login", msg);
+		}
+		long currentTimeMillis = System.currentTimeMillis();
+		long cost = currentTimeMillis - timeMillis;
+		return "done! cost" + cost;
+	}
+	
 	@RequestMapping("/login/{name}")
 	@ResponseBody
 	public String login(@PathVariable("name") String name) throws Exception{
 		return bizService.saveLoginUser(name);
 	}
-
+	
+	@RequestMapping("/testBigContent")
+	@ResponseBody
+	public String testBigContent() throws Exception{
+		LoginMsg msg = new LoginMsg();
+		String name = "";
+		for(int i = 0;i<5000;i++){
+			name += UUID.randomUUID().toString();
+		}
+		msg.setLoginName(name);
+		msg.setLoginTime(new Date().getTime());
+		mqSender.send("event-exchange", "login", msg);
+		return "success name length = " + name.length();
+	}
 }
