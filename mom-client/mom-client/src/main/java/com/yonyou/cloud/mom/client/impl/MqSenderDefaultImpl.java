@@ -73,8 +73,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 	@Override
 	public void justSend(String exchange, String routeKey, Object data) {
-		// TODO Auto-generated method stub
-		getRabbitOperations().convertAndSend(exchange,routeKey, data);
+		sendRabbitQ(exchange,routeKey, "",data);
 	}
 
 	private void sendToMQ(final String exchange, final String routeKey, final String msgKey, final Object data) {
@@ -88,6 +87,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					startTime = System.currentTimeMillis();
 					sendRabbitQ(exchange,routeKey, msgKey, data);
 //					System.out.println(1/0);
+					msgStore.update2success(msgKey);;
 				} catch (Exception e) {
 					// 设置为失败
 					LOGGER.debug("------发送消息异常，调用消息存储失败的方法------");
@@ -121,11 +121,10 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
                 	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
                     message.getMessageProperties().setContentType("json");
                    
-                   
                 } catch (Exception e) {
                     throw new AmqpException(e);
                 }
-                msgStore.update2success(correlation);;
+              
                 return message;
                 
             }
