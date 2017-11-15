@@ -696,72 +696,72 @@ public class ConsumerMsgExample {
         }
 
         public Criteria andBizclassNameIsNull() {
-            addCriterion("BIZCLASS_NAME is null");
+            addCriterion("BIZ_CLASS_NAME is null");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameIsNotNull() {
-            addCriterion("BIZCLASS_NAME is not null");
+            addCriterion("BIZ_CLASS_NAME is not null");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameEqualTo(String value) {
-            addCriterion("BIZCLASS_NAME =", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME =", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameNotEqualTo(String value) {
-            addCriterion("BIZCLASS_NAME <>", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME <>", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameGreaterThan(String value) {
-            addCriterion("BIZCLASS_NAME >", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME >", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameGreaterThanOrEqualTo(String value) {
-            addCriterion("BIZCLASS_NAME >=", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME >=", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameLessThan(String value) {
-            addCriterion("BIZCLASS_NAME <", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME <", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameLessThanOrEqualTo(String value) {
-            addCriterion("BIZCLASS_NAME <=", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME <=", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameLike(String value) {
-            addCriterion("BIZCLASS_NAME like", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME like", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameNotLike(String value) {
-            addCriterion("BIZCLASS_NAME not like", value, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME not like", value, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameIn(List<String> values) {
-            addCriterion("BIZCLASS_NAME in", values, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME in", values, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameNotIn(List<String> values) {
-            addCriterion("BIZCLASS_NAME not in", values, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME not in", values, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameBetween(String value1, String value2) {
-            addCriterion("BIZCLASS_NAME between", value1, value2, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME between", value1, value2, "bizclassName");
             return (Criteria) this;
         }
 
         public Criteria andBizclassNameNotBetween(String value1, String value2) {
-            addCriterion("BIZCLASS_NAME not between", value1, value2, "bizclassName");
+            addCriterion("BIZ_CLASS_NAME not between", value1, value2, "bizclassName");
             return (Criteria) this;
         }
 

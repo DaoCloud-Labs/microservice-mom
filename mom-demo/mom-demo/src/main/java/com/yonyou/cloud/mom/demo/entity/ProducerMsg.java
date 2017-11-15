@@ -33,7 +33,7 @@ public class ProducerMsg {
     @Column(name = "RETRY_COUNT")
     private Integer retryCount;
 
-    @Column(name = "BIZCLASS_NAME")
+    @Column(name = "BIZ_CLASS_NAME")
     private String bizclassName;
 
     /**
@@ -163,7 +163,7 @@ public class ProducerMsg {
     }
 
     /**
-     * @return BIZCLASS_NAME
+     * @return BIZ_CLASS_NAME
      */
     public String getBizclassName() {
         return bizclassName;

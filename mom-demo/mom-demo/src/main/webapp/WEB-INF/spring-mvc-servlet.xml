@@ -34,9 +34,9 @@
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"  
         destroy-method="close">  
          <property name="driverClassName" value="com.mysql.jdbc.Driver" />  
-        <property name="url" value="jdbc:mysql://10.180.8.205:3306/dmc_coupon" />  
+        <property name="url" value="jdbc:mysql://10.180.8.173:8306/test" />  
         <property name="username" value="root" />  
-        <property name="password" value="rcs" />  
+        <property name="password" value="abcd123" />  
 	</bean>  
   
     <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->  

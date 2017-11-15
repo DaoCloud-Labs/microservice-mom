@@ -14,7 +14,7 @@
     <result column="ROUTER_KEY" property="routerKey" jdbcType="VARCHAR" />
     <result column="INFO_MSG" property="infoMsg" jdbcType="VARCHAR" />
     <result column="RETRY_COUNT" property="retryCount" jdbcType="INTEGER" />
-    <result column="BIZCLASS_NAME" property="bizclassName" jdbcType="VARCHAR" />
+    <result column="BIZ_CLASS_NAME" property="bizclassName" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <!--
@@ -85,7 +85,7 @@
       WARNING - @mbggenerated
     -->
     MSG_KEY, MSG_CONTENT, STATUS, CREATE_TIME, UPDATE_TIME, EXCHANGE, ROUTER_KEY, INFO_MSG, 
-    RETRY_COUNT, BIZCLASS_NAME
+    RETRY_COUNT, BIZ_CLASS_NAME
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.yonyou.cloud.mom.demo.entity.ProducerMsgExample" >
     <!--
@@ -156,7 +156,7 @@
         RETRY_COUNT = #{record.retryCount,jdbcType=INTEGER},
       </if>
       <if test="record.bizclassName != null" >
-        BIZCLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR},
+        BIZ_CLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -177,7 +177,7 @@
       ROUTER_KEY = #{record.routerKey,jdbcType=VARCHAR},
       INFO_MSG = #{record.infoMsg,jdbcType=VARCHAR},
       RETRY_COUNT = #{record.retryCount,jdbcType=INTEGER},
-      BIZCLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR}
+      BIZ_CLASS_NAME = #{record.bizclassName,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -214,7 +214,7 @@
         RETRY_COUNT,
       </if>
       <if test="bizclassName != null">
-        BIZCLASS_NAME,
+        BIZ_CLASS_NAME,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -283,7 +283,7 @@
         RETRY_COUNT = #{retryCount,jdbcType=INTEGER},
       </if>
       <if test="bizclassName != null" >
-        BIZCLASS_NAME = #{bizclassName,jdbcType=VARCHAR},
+        BIZ_CLASS_NAME = #{bizclassName,jdbcType=VARCHAR},
       </if>
     </set>
     WHERE MSG_KEY = #{msgKey,jdbcType=VARCHAR}
