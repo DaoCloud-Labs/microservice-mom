@@ -1,8 +1,10 @@
 package com.yonyou.cloud.mom.client.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -12,7 +14,9 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitGatewaySupport;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,7 @@ import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
 import com.yonyou.cloud.mom.core.transaction.executor.AfterCommitExecutorDefaultImpl;
 import com.yonyou.cloud.mom.core.transaction.executor.PreCommitExecutorDefaultImpl;
 import com.yonyou.cloud.mom.core.transaction.executor.TransactionExecutor;
+import com.yonyou.cloud.track.Track;
 
 import net.sf.json.JSONObject;
 
@@ -46,10 +51,18 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	// msg Db Store的实现
 	@Autowired
 	private ProducerMsgStore msgStore ;//= new DbStoreProducerMsg();
+	
+	
+	@Autowired
+	Track tack; 
+	
+	@Value("${track.isTacks}")
+	private Boolean isTacks; 
 
 	@Override
 	@Transactional
 	public void send(String exchange, String routeKey, Object data) {
+		
 		// 消息主键
 		String msgKey;
 		msgKey = UUID.randomUUID().toString();
@@ -68,6 +81,23 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 			throw new AmqpException(e);
 		}
 
+		//消息信息埋点
+		
+			try {
+				if(isTacks) {
+					Map<String, Object> properties=new HashMap<>();
+//					properties.put("sender", "消息发送");
+					properties.put("msgKey", msgKey);
+					properties.put("exchange", exchange);
+					properties.put("msg_content", dataConvert);
+					properties.put("bizClassName", data.getClass().getName());
+					tack.track("msginit", "mqTrack", properties);
+					tack.shutdown();
+				}
+			} catch (Exception e1) {
+				LOGGER.info("埋点msgProducer 发生异常",e1);
+			} 
+		
 			sendToMQ(exchange, routeKey, msgKey, data);
 	}
 
@@ -78,31 +108,60 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 	private void sendToMQ(final String exchange, final String routeKey, final String msgKey, final Object data) {
 		afterCommitExecutor.execute(new Runnable() {
+			
 			@Override
 			public void run() {
+				
+				ObjectMapper mapper = new ObjectMapper();
+				// 转换后的String
+				String dataConvert;
+				try {
+					dataConvert = mapper.writeValueAsString(data);
+				} catch (IOException e1) {
+					throw new AmqpException(e1);
+				}
 
 				Long startTime = 0L;
 				try {
 					LOGGER.debug("------发送消息开始------");
 					startTime = System.currentTimeMillis();
 					sendRabbitQ(exchange,routeKey, msgKey, data);
-//					System.out.println(1/0);
-					msgStore.update2success(msgKey);;
+					msgStore.update2success(msgKey);
+					//消息发送成功埋点
+					try {
+						if(isTacks) {
+							Map<String, Object> properties=new HashMap<>();
+							properties.put("sender", "消息发送");
+							properties.put("msgKey", msgKey);
+							properties.put("exchange", exchange);
+							properties.put("msg_content", dataConvert);
+							properties.put("static", "success");
+							tack.track("msgProducer", "msgProducer", properties);
+							tack.shutdown();
+						}
+					} catch (Exception e1) {
+						LOGGER.info("埋点msgProducer 发生异常",e1);
+					}
+					
 				} catch (Exception e) {
 					// 设置为失败
 					LOGGER.debug("------发送消息异常，调用消息存储失败的方法------");
 					
-					ObjectMapper mapper = new ObjectMapper();
-					// 转换后的String
-					String dataConvert;
-					try {
-						dataConvert = mapper.writeValueAsString(data);
-					} catch (IOException e1) {
-						throw new AmqpException(e1);
-					}
-					
 					msgStore.msgStoreFailed(msgKey, e.toString(), System.currentTimeMillis() - startTime, exchange,  routeKey,dataConvert,data.getClass().getName());
-					
+					//消息发送失败埋点 
+					try {
+						if(isTacks) {
+							Map<String, Object> properties=new HashMap<>();
+							properties.put("sender", "消息发送");
+							properties.put("msgKey", msgKey); 
+							properties.put("msgException", e.toString());
+							properties.put("static", "faile");
+							tack.track("msgProducer", "msgProducer", properties);
+							tack.shutdown();
+						}
+					} catch (Exception e1) {
+						LOGGER.info("埋点msgProducer 发生异常",e1);
+					}
 				}
 			}
 		});

@@ -4,14 +4,18 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 @Entity
-@Table(name="BIZ_DATA")
+@DynamicUpdate
+@DynamicInsert
+@Table(name="biz_data")
 public class BizEntity {
 	
-	
-	
-	public BizEntity() {
-	}
+	@Id
+	private String id;
+	private String name;
 
 	public String getId() {
 		return id;
@@ -20,13 +24,6 @@ public class BizEntity {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	@Id
-	private String id;
-	
-	
-	private String name;
-
 
 	public String getName() {
 		return name;

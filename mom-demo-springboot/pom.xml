@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+
 	<groupId>com.yonyou.cloud</groupId>
 	<artifactId>mom-demo-springboot</artifactId>
 	<version>1.0-SNAPSHOT</version>
@@ -15,7 +16,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.4.7.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />  
 	</parent>
 
 	<properties>
@@ -25,6 +26,7 @@
 	</properties>
 
 	<dependencies>
+ 
 		<dependency>
 			<groupId>com.yonyou.cloud</groupId>
 			<artifactId>mom-client</artifactId>
@@ -66,14 +68,15 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.4.7.RELEASE</version>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>

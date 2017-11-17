@@ -21,6 +21,4 @@ public class LoginMsg {
 	public void setLoginTime(Long loginTime) {
 		this.loginTime = loginTime;
 	}
-	
-	
 }
