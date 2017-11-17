@@ -1,5 +1,8 @@
 package com.yonyou.cloud.mom.client.consumer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -7,11 +10,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.support.converter.JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.rabbitmq.client.Channel;
@@ -19,6 +21,7 @@ import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
 import com.yonyou.cloud.mom.core.store.impl.DbStoreConsumerMsg;
+import com.yonyou.cloud.track.Track;
 
 /**
  * consumer的aop
@@ -34,7 +37,13 @@ public class ConsumerAspect {
 
 	@Autowired
 	MessageConverter messageConverter;
-
+	
+	@Autowired
+	Track tack;
+	
+	@Value("${track.isTacks}")
+	private Boolean isTacks; 
+	
     private ConsumerMsgStore dbStoreConsumerMsg  = new DbStoreConsumerMsg();
     
     
@@ -92,13 +101,46 @@ public class ConsumerAspect {
                         rtnOb = pjp.proceed();
                         // setting to success
                         dbStoreConsumerMsg.updateMsgSuccess(msgKey);
-                        
+                    	
+                        //消息消费成功埋点 
+                    	try {
+                    		if(isTacks) {
+							Map<String, Object> properties=new HashMap<>();
+							properties.put("sender", "消息消费成功");
+							properties.put("msgKey", msgKey); 
+							properties.put("static", "success");
+							properties.put("consumerClassName", consumerClassName);
+							properties.put("bizclassName", bizclassName);
+							tack.track("msgCustomer", "msgCustomer", properties);
+							tack.shutdown();
+                    		}
+						} catch (Exception e1) {
+							LOGGER.info("埋点msgCustomer 发生异常");
+						}
+    					
                         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     } catch (Throwable t) {
                         LOGGER.error(t.getMessage());
 
                         // setting to failed
                         dbStoreConsumerMsg.updateMsgFaild(msgKey);
+                        
+                        //消息消费失败埋点
+						try {
+							if(isTacks) {
+							Map<String, Object> properties=new HashMap<>();
+							properties.put("sender", "消息消费失败");
+							properties.put("msgKey", msgKey); 
+							properties.put("static", "success");
+							properties.put("consumerClassName", consumerClassName);
+							properties.put("bizclassName", bizclassName);
+							tack.track("msgCustomer", "msgCustomer", properties);
+							tack.shutdown();
+							}
+						} catch (Exception e1) {
+							LOGGER.info("埋点msgCustomer 发生异常");
+						}
+    					
                         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                         throw t;
                     }

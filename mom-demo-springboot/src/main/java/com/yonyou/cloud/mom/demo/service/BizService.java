@@ -1,5 +1,4 @@
 package com.yonyou.cloud.mom.demo.service;
-
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import com.yonyou.cloud.mom.client.MqSender;
 import com.yonyou.cloud.mom.demo.dao.BizDao;
 import com.yonyou.cloud.mom.demo.msg.entity.BizEntity;
 import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
+ 
 
 @Service
 @Transactional
@@ -17,17 +17,17 @@ public class BizService {
 	
 	
 	@Autowired
-	private MqSender mqSender;
+	 MqSender mqSender;
 	
 	@Autowired
-	private BizDao bizDao;
+	 BizDao bizDao;
 	
 	
 	public String saveLoginUser(String name) throws InterruptedException{
 		
 		BizEntity e = new BizEntity();
-		e.setId(name);
-		e.setName(name);
+		e.setId(new Date().toString());
+		e.setName(name+System.currentTimeMillis());
 		bizDao.save(e);
 		
 		LoginMsg msg = new LoginMsg();
