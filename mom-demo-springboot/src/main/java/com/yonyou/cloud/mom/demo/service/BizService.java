@@ -34,7 +34,7 @@ public class BizService {
 		msg.setLoginName(name);
 		msg.setLoginTime(new Date().getTime());
 		
-		mqSender.send("event-exchange", "login", msg);
+		mqSender.send("exchange-name", "queue-key", msg);
 		
 		return "1";
 	}

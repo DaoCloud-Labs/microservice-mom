@@ -3,6 +3,7 @@ package com.yonyou.cloud.mom.core.dto;
 public class ConsumerDto {
 	
 	private String msgKey;
+	private String routerKey;
 	private String msgContent;
 	private Integer status;
 	private String infoMsg;
@@ -64,6 +65,14 @@ public class ConsumerDto {
 
 	public void setBizClassName(String bizClassName) {
 		this.bizClassName = bizClassName;
+	}
+
+	public String getRouterKey() {
+		return routerKey;
+	}
+
+	public void setRouterKey(String routerKey) {
+		this.routerKey = routerKey;
 	}
 
 

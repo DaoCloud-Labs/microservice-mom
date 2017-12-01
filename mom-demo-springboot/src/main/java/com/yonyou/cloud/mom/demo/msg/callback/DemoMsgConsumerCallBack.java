@@ -56,9 +56,12 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 			msgnew.setRouterKey(routerKey);
 			msgnew.setBizClassName(bizClassName);
 			msgnew.setConsumerClassName(consumerClassName);
+			msgnew.setRetryCount(0);
 			consumerDao.save(msgnew);
 		}else{
-			throw new StoreDBCallbackException("can not find msg "+msgKey);
+//			throw new StoreDBCallbackException("can not find msg "+msgKey);
+			msg.setRetryCount(msg.getRetryCount()+1);
+			consumerDao.save(msg);
 		}
 		
 	}
@@ -99,7 +102,8 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 			dto.setConsumerClassName(consumer.getConsumerClassName());
 			dto.setBizClassName(consumer.getBizClassName());
 			dto.setStatus(consumer.getStatus());
-//			dto.setRetryCount(consumer.getRetryCount());
+			dto.setRouterKey(consumer.getRouterKey());
+			dto.setRetryCount(consumer.getRetryCount());
 			dtolist.add(dto);
 		}
 		return dtolist;
