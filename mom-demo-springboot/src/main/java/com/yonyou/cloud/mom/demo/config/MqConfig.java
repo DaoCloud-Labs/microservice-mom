@@ -46,17 +46,17 @@ public class MqConfig {
 
 	@Bean
 	public Queue pointsListenLoginQueue() {
-		return new Queue("points-login", true); // 队列持久
+		return new Queue("queue-name", true); // 队列持久
 	}
 
 	@Bean
 	public DirectExchange eventExchange() {
-		return new DirectExchange("event-exchange");
+		return new DirectExchange("exchange-name");
 	}
 
 	@Bean
 	public Binding PointsBindingLogin() {
-		return BindingBuilder.bind(pointsListenLoginQueue()).to(eventExchange()).with("login");
+		return BindingBuilder.bind(pointsListenLoginQueue()).to(eventExchange()).with("queue-key");
 	}
 
 	@Bean
@@ -78,10 +78,5 @@ public class MqConfig {
 		JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
 		return jsonMessageConverter;
 	}
-
-	// @Bean
-	// public PointsListenLogin pointsListenLogin(){
-	// return new PointsListenLogin();
-	// }
-	//
+ 
 }

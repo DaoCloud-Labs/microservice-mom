@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,9 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	
 	@Autowired
 	private ConsumerMsgStore msgStore ;
+	
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 	
 	@Override
 	public void reConsumer() throws  Exception {
@@ -55,18 +62,41 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 			 
 			Object objListen= getConsumerListen(ConsumerClass);
 			
-			AbstractConsumerListener consumerListener=(AbstractConsumerListener) objListen;
-			consumerListener.handleMessage(ojbClass);
- 
+//			AbstractConsumerListener consumerListener=(AbstractConsumerListener) objListen;
+//			consumerListener.handleMessage(ojbClass); 
+			resendRabbitQ( msgEntity.getRouterKey(),msgEntity.getMsgKey(),  ojbClass); 
 		 
 			 //更新状态
-			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
+//			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
 			 
 			 System.out.println("执行完毕");
 			 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+    }
+    
+    
+    
+    
+	protected void resendRabbitQ(String routeKey, String correlation, Object data) {
+
+		rabbitTemplate.convertAndSend(routeKey, data, new MessagePostProcessor() {
+
+			public Message postProcessMessage(Message message) throws AmqpException {
+
+                try {
+                	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
+                    message.getMessageProperties().setContentType("json");
+                   
+                } catch (Exception e) {
+                    throw new AmqpException(e);
+                }
+              
+                return message;
+                
+            }
+        }); 
     }
 
 }
