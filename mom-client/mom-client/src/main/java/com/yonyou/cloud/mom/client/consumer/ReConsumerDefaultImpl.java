@@ -12,11 +12,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.yonyou.cloud.mom.core.dto.ConsumerDto;
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
-import com.yonyou.cloud.mom.core.util.SpringUtil;
 
 import net.sf.json.JSONObject;
 
@@ -44,12 +42,6 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 
 	}
 	
-	
-    private Object getConsumerListen(Class listenC){
-    	   SpringUtil.getBean(listenC);
-    	return SpringUtil.getBean(listenC);
-    }
-    
     
     @Transactional
     @SuppressWarnings("unchecked")
@@ -58,21 +50,20 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 			Class c =Class.forName(msgEntity.getBizClassName()); //创建一个类
 			 JSONObject obj = new JSONObject().fromObject(msgEntity.getMsgContent());
 			 Object ojbClass = JSONObject.toBean(obj,c);//把json转化成指定的对象
-			 Class<?> ConsumerClass =Class.forName(msgEntity.getConsumerClassName()); 
 			 
-			Object objListen= getConsumerListen(ConsumerClass);
-			
+			 resendRabbitQ( msgEntity.getRouterKey(),msgEntity.getMsgKey(),  ojbClass); 
+			 
+			 
+//			 Class<?> ConsumerClass =Class.forName(msgEntity.getConsumerClassName()); 
+//			Object objListen= getConsumerListen(ConsumerClass);
 //			AbstractConsumerListener consumerListener=(AbstractConsumerListener) objListen;
 //			consumerListener.handleMessage(ojbClass); 
-			resendRabbitQ( msgEntity.getRouterKey(),msgEntity.getMsgKey(),  ojbClass); 
-		 
 			 //更新状态
 //			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
-			 
 			 System.out.println("执行完毕");
 			 
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new AmqpException(e);
 		}
     }
     
