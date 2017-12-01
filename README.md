@@ -29,5 +29,3 @@ Spring:4.0+
 [springboot使用说明](https://github.com/yonyou-auto-dev/microservice-mom/blob/dev/springbootdemo.md)
 
 [springmvc使用说明](https://github.com/yonyou-auto-dev/microservice-mom/blob/dev/Springmvc.md)
-
-
