@@ -10,13 +10,21 @@ import com.yonyou.cloud.track.Track;
 @Configuration
 public class TrackConfig {
  
-	@Value("${track.LoggingUrl}")
+	@Value("${track.LoggingUrl:/opt/ops/track.log}")
 	private String LoggingUrl;
+	
+	@Value("${track.isTacks:false}")
+	private Boolean isTacks; 
 	
 	@Bean
 	public Track initTrack() throws IOException {
 		System.out.println("埋点初始化成功");
-		return  new Track(new Track.ConcurrentLoggingConsumer(LoggingUrl));
+		if(isTacks) {
+			return  new Track(new Track.ConcurrentLoggingConsumer(LoggingUrl));
+		}else {
+			return null; 
+		}
+		
 	}
   
 

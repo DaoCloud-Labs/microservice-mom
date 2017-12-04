@@ -41,7 +41,7 @@ public class ConsumerAspect {
 	@Autowired
 	Track tack;
 	
-	@Value("${track.isTacks}")
+	@Value("${track.isTacks:false}")
 	private Boolean isTacks; 
 	
     private ConsumerMsgStore dbStoreConsumerMsg  = new DbStoreConsumerMsg();
