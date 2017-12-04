@@ -8,9 +8,9 @@
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.8.RELEASE</version>
+		<groupId>com.yonyou.cloud</groupId>
+		<artifactId>microservice-mom</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -23,12 +23,9 @@
 	</properties>
 
 	<dependencies>
-
-
 		<dependency>
 			<groupId>com.yonyou.cloud</groupId>
 			<artifactId>mom-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -45,7 +42,6 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.8</version>
 		</dependency>
 
 		<dependency>
@@ -66,15 +62,12 @@
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>
 			<artifactId>json-lib</artifactId>
-			<version>2.4</version>
 			<classifier>jdk15</classifier>
 		</dependency>
-
 
 		<dependency>
 			<groupId>com.yonyou.cloud</groupId>
 			<artifactId>track</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>
@@ -94,16 +87,5 @@
 	</build>
 
 
-	<distributionManagement>
-		<repository>
-			<id>nexus-releases</id>
-			<name>Releases name</name>
-			<url>http://210.13.111.26:10160/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<name>snapshots name</name>
-			<url>http://210.13.111.26:10160/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+	
 </project>
