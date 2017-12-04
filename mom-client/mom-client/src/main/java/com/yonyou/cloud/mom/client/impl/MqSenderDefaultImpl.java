@@ -64,9 +64,13 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	public void send(String exchange, String routeKey, Object data, String ...bizCodes) {
 		
 		// 消息主键
-		String msgKey;
-		msgKey = UUID.randomUUID().toString();
-		msgKey += StringUtils.join(bizCodes, "&");
+	 
+		StringBuffer msgKey=new StringBuffer(); 
+		msgKey.append(UUID.randomUUID().toString());
+		msgKey.append("&");
+		msgKey.append(StringUtils.join(bizCodes, "&"));
+		
+		 
 		
 		ObjectMapper mapper = new ObjectMapper();
 		// 转换后的String
@@ -76,7 +80,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 			dataConvert = mapper.writeValueAsString(data);
 
 			// store
-			storeMsg(dataConvert, msgKey, exchange, routeKey,data.getClass().getName());
+			storeMsg(dataConvert, msgKey.toString(), exchange, routeKey,data.getClass().getName());
 
 		} catch (IOException e) {
 			throw new AmqpException(e);
@@ -99,7 +103,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 				LOGGER.info("埋点msgProducer 发生异常",e1);
 			} 
 		
-			sendToMQ(exchange, routeKey, msgKey, data);
+			sendToMQ(exchange, routeKey, msgKey.toString(), data);
 	}
 
 	@Override
