@@ -35,7 +35,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	@Autowired
 	Track tack;
 	
-	@Value("${track.isTacks}")
+	@Value("${track.isTacks:false}")
 	private Boolean isTacks; 
 	
 	@Override
