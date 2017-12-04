@@ -485,6 +485,7 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 			dto.setBizClassName(consumer.getBizClassName());
 			dto.setStatus(consumer.getStatus());
 //			dto.setRetryCount(consumer.getRetryCount());
+            dto.setRouterKey(consumer.getRouterKey());//队列名称
 			dtolist.add(dto);
 		}
 		return dtolist;
@@ -578,6 +579,7 @@ private String msgKey;
 	private Integer status;
 	private String infoMsg;
 	private Integer retryCount;
+	private String routerKey;//队列名称
 	private String consumerClassName;//消费者类名
 	private String bizClassName;
 ```

@@ -10,7 +10,7 @@ public interface MqSender {
 	 * @param routeKey
 	 * @param data
 	 */
-	void send(String exchange, String routeKey, Object data);
+	void send(String exchange, String routeKey, Object data, String ... bizCodes);
 	
 	/**
 	 * 非一致性发送：极端情况有可能会丢失消息
