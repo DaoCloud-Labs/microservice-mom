@@ -64,13 +64,9 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	public void send(String exchange, String routeKey, Object data, String ...bizCodes) {
 		
 		// 消息主键
-	 
 		StringBuffer msgKey=new StringBuffer(); 
 		msgKey.append(UUID.randomUUID().toString());
-		msgKey.append("&");
-		msgKey.append(StringUtils.join(bizCodes, "&"));
-		
-		 
+		msgKey.append(StringUtils.isEmpty(StringUtils.join(bizCodes, "&"))?"":"&"+StringUtils.join(bizCodes, "&"));
 		
 		ObjectMapper mapper = new ObjectMapper();
 		// 转换后的String
