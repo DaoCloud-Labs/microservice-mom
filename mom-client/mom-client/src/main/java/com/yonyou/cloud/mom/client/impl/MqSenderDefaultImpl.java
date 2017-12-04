@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,6 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitGatewaySupport;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -61,12 +61,13 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 	@Override
 	@Transactional
-	public void send(String exchange, String routeKey, Object data) {
+	public void send(String exchange, String routeKey, Object data, String ...bizCodes) {
 		
 		// 消息主键
 		String msgKey;
 		msgKey = UUID.randomUUID().toString();
-
+		msgKey += StringUtils.join(bizCodes, "&");
+		
 		ObjectMapper mapper = new ObjectMapper();
 		// 转换后的String
 		String dataConvert;
