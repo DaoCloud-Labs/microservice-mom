@@ -3,12 +3,17 @@ package com.yonyou.cloud.mom.core.transaction.executor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * 事务提交的base
@@ -16,11 +21,18 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author BENJAMIN
  *
  */
-public abstract class TransactionExecutorBaseImpl extends TransactionSynchronizationAdapter implements TransactionExecutor {
+public abstract class BaseTransactionExecutorImpl extends TransactionSynchronizationAdapter implements TransactionExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionExecutorBaseImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseTransactionExecutorImpl.class);
     protected final ThreadLocal<List<Runnable>> RUNNABLES = new ThreadLocal<List<Runnable>>();
-    protected ExecutorService executor = Executors.newFixedThreadPool(10);
+    
+    protected ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("mom-tran-pool-%d").build();
+           
+    
+    /**
+     * 事务执行线程池
+     */
+    protected ExecutorService executor = new ThreadPoolExecutor(10, 20, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1024),namedThreadFactory);
 
     
 	/**
@@ -33,7 +45,6 @@ public abstract class TransactionExecutorBaseImpl extends TransactionSynchroniza
 	        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
 	            LOGGER.debug("事务同步未激活. 直接开始执行线程 {}", command);
 	            executor.execute(command);
-//	            command.run();
 	            return;
 	        }
 	        List<Runnable> threadRunnables = RUNNABLES.get();
@@ -44,5 +55,18 @@ public abstract class TransactionExecutorBaseImpl extends TransactionSynchroniza
 	        }
 	        threadRunnables.add(command);
 	}
+    
+    @Override
+    public void afterCompletion(int status) {
+        LOGGER.warn("No impl execute Transaction base completed with status {}", status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK");
+        RUNNABLES.remove();
+    }
+    
+    @Override
+    public void beforeCompletion() {
+        LOGGER.warn("No impl execute Transaction base Transaction beforeCompletion");
+        RUNNABLES.remove();
+    }
+
 
 }

@@ -57,9 +57,11 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
     @SuppressWarnings("unchecked")
     private void executeReConsumer( ConsumerDto msgEntity) {
 		try {
-			Class c =Class.forName(msgEntity.getBizClassName()); //创建一个类
-			 JSONObject obj = new JSONObject().fromObject(msgEntity.getMsgContent());
-			 Object ojbClass = JSONObject.toBean(obj,c);//把json转化成指定的对象
+			//创建一个类
+			Class c =Class.forName(msgEntity.getBizClassName()); 
+			 JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
+			//把json转化成指定的对象
+			 Object ojbClass = JSONObject.toBean(obj,c);
 			 
 			 resendRabbitQ( msgEntity.getRouterKey(),msgEntity.getMsgKey(),  ojbClass); 
 			 
@@ -110,6 +112,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 
 		rabbitTemplate.convertAndSend(routeKey, data, new MessagePostProcessor() {
 
+			@Override
 			public Message postProcessMessage(Message message) throws AmqpException {
 
                 try {

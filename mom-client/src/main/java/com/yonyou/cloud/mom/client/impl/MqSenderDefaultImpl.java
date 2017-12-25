@@ -173,6 +173,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 		getRabbitOperations().convertAndSend(exchange,routeKey, data, new MessagePostProcessor() {
 
+			@Override
 			public Message postProcessMessage(Message message) throws AmqpException {
 
                 try {
@@ -227,7 +228,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 			 
 			try {
 				 Class c =Class.forName(msgEntity.getBizClassName()); 
-				 JSONObject obj = new JSONObject().fromObject(msgEntity.getMsgContent());
+				 JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
 				 Object ojbClass = JSONObject.toBean(obj,c);
 				 
 				 sendToMQ(msgEntity.getExchange(), msgEntity.getRouterKey(), msgEntity.getMsgKey(), ojbClass);

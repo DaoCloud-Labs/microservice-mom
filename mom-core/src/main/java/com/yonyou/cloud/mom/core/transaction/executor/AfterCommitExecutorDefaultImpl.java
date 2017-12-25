@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author BENJAMIN
  */
-public class AfterCommitExecutorDefaultImpl extends TransactionExecutorBaseImpl {
+public class AfterCommitExecutorDefaultImpl extends BaseTransactionExecutorImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AfterCommitExecutorDefaultImpl.class);
 

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * @author BENJAMIN
  *
  */
-public class PreCommitExecutorDefaultImpl extends TransactionExecutorBaseImpl {
+public class PreCommitExecutorDefaultImpl extends BaseTransactionExecutorImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreCommitExecutorDefaultImpl.class);
 
