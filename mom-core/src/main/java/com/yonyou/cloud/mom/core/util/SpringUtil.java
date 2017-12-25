@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 /**
  * 获取spring容器
+ * 
+ * @author BENJAMIN
+ *
  */
 @Service
 public class SpringUtil implements ApplicationContextAware {
@@ -19,6 +22,7 @@ public class SpringUtil implements ApplicationContextAware {
     /**
      * 实现ApplicationContextAware接口的回调方法，设置上下文环境
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         SpringUtil.applicationContext = applicationContext;
     }
