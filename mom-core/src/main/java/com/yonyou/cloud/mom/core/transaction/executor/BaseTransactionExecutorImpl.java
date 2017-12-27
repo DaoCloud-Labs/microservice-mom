@@ -55,18 +55,5 @@ public abstract class BaseTransactionExecutorImpl extends TransactionSynchroniza
 	        }
 	        threadRunnables.add(command);
 	}
-    
-    @Override
-    public void afterCompletion(int status) {
-        LOGGER.warn("No impl execute Transaction base completed with status {}", status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK");
-        RUNNABLES.remove();
-    }
-    
-    @Override
-    public void beforeCompletion() {
-        LOGGER.warn("No impl execute Transaction base Transaction beforeCompletion");
-        RUNNABLES.remove();
-    }
-
-
+  
 }
