@@ -37,13 +37,12 @@ import net.sf.json.JSONObject;
  * @author BENJAMIN
  *
  */
-@Service
 public class MqSenderSimpleImpl extends RabbitGatewaySupport implements MqSender {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(MqSenderSimpleImpl.class);
 
 	@Autowired
-	Track tack; 
+	private Track tack; 
 	@Value("${track.isTacks:false}")
 	private Boolean isTacks; 
 	
@@ -105,6 +104,16 @@ public class MqSenderSimpleImpl extends RabbitGatewaySupport implements MqSender
 	public void resend() {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	public Track getTack() {
+		return tack;
+	}
+
+
+	public void setTack(Track tack) {
+		this.tack = tack;
 	}
 	
 
