@@ -41,9 +41,29 @@ import net.sf.json.JSONObject;
 public class MqSenderSimpleImpl extends RabbitGatewaySupport implements MqSender {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(MqSenderSimpleImpl.class);
+
+	@Autowired
+	Track tack; 
+	@Value("${track.isTacks:false}")
+	private Boolean isTacks; 
 	
 	@Override
 	public void justSend(String exchange, String routeKey, Object data) {
+		try {
+			if(isTacks) {
+				// 消息主键
+				StringBuffer msgKey=new StringBuffer(); 
+				msgKey.append(UUID.randomUUID().toString());
+				Map<String, Object> properties=new HashMap<>();
+				properties.put("msgKey", msgKey);
+				properties.put("exchange", exchange);
+				properties.put("msg_content", data);
+				properties.put("bizClassName", data.getClass().getName());
+				tack.track("msginit", "mqTrack", properties);
+			}
+		} catch (Exception e1) {
+			LOGGER.info("埋点msgProducer 发生异常",e1);
+		} 
 		sendRabbitQ(exchange,routeKey, "",data);
 	}
 	
