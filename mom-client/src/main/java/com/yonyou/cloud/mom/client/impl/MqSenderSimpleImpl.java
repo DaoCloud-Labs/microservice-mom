@@ -54,7 +54,7 @@ public class MqSenderSimpleImpl extends RabbitGatewaySupport implements MqSender
 				StringBuffer msgKey=new StringBuffer(); 
 				msgKey.append(UUID.randomUUID().toString());
 				Map<String, Object> properties=new HashMap<>();
-				properties.put("msgKey", msgKey);
+				properties.put("msgKey", msgKey.toString());
 				properties.put("exchange", exchange);
 				properties.put("msg_content", data);
 				properties.put("bizClassName", data.getClass().getName());
