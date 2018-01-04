@@ -87,7 +87,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 			try {
 				if(isTacks) {
 					Map<String, Object> properties=new HashMap<>();
-					properties.put("type", "CONSUMER");
+					properties.put("type", "PRODUCER");
 					properties.put("msgKey", msgKey); 
 					properties.put("sender", data.getClass().getName()); 
 					properties.put("exchangeName",exchange);
@@ -135,7 +135,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					try {
 						if(isTacks) {
 							Map<String, Object> properties=new HashMap<>();
-							properties.put("type", "CONSUMER");
+							properties.put("type", "PRODUCER");
 							properties.put("msgKey", msgKey); 
 							properties.put("sender", data.getClass().getName()); 
 							properties.put("exchangeName",exchange);
@@ -159,7 +159,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					try {
 						if(isTacks) {
 							Map<String, Object> properties=new HashMap<>();
-							properties.put("type", "CONSUMER");
+							properties.put("type", "PRODUCER");
 							properties.put("msgKey", msgKey); 
 							properties.put("sender", data.getClass().getName()); 
 							properties.put("exchangeName",exchange);
