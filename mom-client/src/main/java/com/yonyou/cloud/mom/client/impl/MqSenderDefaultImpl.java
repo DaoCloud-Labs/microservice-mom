@@ -143,7 +143,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("data", dataConvert); 
 							properties.put("success", "true"); 
 							properties.put("host", "localhost"); 
-							tack.track("msgProducer", "msgProducer", properties);
+							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
 					} catch (Exception e1) {
@@ -167,7 +167,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("data", dataConvert); 
 							properties.put("success", "false"); 
 							properties.put("host", "localhost"); 
-							tack.track("msgProducer", "msgProducer", properties);
+							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
 					} catch (Exception e1) {

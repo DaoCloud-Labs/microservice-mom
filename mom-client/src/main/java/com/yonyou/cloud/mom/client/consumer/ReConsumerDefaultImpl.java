@@ -88,7 +88,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("success", "true"); 
 					properties.put("host", "localhost");  
 					properties.put("IsRestart", "true");
-					tack.track("msgCustomer", "msgCustomer", properties);
+					tack.track("msgCustomer", "mqTrack", properties);
 					tack.shutdown();
          		}
 				} catch (Exception e1) {
@@ -113,7 +113,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("host", "localhost");
 					properties.put("infoMsg", e.getMessage());
 					properties.put("IsRestart", "true");
-					tack.track("msgCustomer", "msgCustomer", properties);
+					tack.track("msgCustomer", "mqTrack", properties);
 					tack.shutdown();
 				}
 			} catch (Exception e1) {
