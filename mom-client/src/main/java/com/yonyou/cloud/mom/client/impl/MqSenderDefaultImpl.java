@@ -87,11 +87,14 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 			try {
 				if(isTacks) {
 					Map<String, Object> properties=new HashMap<>();
-//					properties.put("sender", "消息发送");
-					properties.put("msgKey", msgKey);
-					properties.put("exchange", exchange);
-					properties.put("msg_content", dataConvert);
-					properties.put("bizClassName", data.getClass().getName());
+					properties.put("type", "CONSUMER");
+					properties.put("msgKey", msgKey); 
+					properties.put("sender", data.getClass().getName()); 
+					properties.put("exchangeName",exchange);
+					properties.put("routingKey", routeKey); 
+					properties.put("data", dataConvert); 
+					properties.put("success", "true"); 
+					properties.put("host", "localhost"); 
 					tack.track("msginit", "mqTrack", properties);
 					tack.shutdown();
 				}
@@ -132,11 +135,14 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					try {
 						if(isTacks) {
 							Map<String, Object> properties=new HashMap<>();
-							properties.put("sender", "消息发送");
-							properties.put("msgKey", msgKey);
-							properties.put("exchange", exchange);
-							properties.put("msg_content", dataConvert);
-							properties.put("static", "success");
+							properties.put("type", "CONSUMER");
+							properties.put("msgKey", msgKey); 
+							properties.put("sender", data.getClass().getName()); 
+							properties.put("exchangeName",exchange);
+							properties.put("routingKey", routeKey); 
+							properties.put("data", dataConvert); 
+							properties.put("success", "true"); 
+							properties.put("host", "localhost"); 
 							tack.track("msgProducer", "msgProducer", properties);
 							tack.shutdown();
 						}
@@ -153,10 +159,14 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					try {
 						if(isTacks) {
 							Map<String, Object> properties=new HashMap<>();
-							properties.put("sender", "消息发送");
+							properties.put("type", "CONSUMER");
 							properties.put("msgKey", msgKey); 
-							properties.put("msgException", e.toString());
-							properties.put("static", "faile");
+							properties.put("sender", data.getClass().getName()); 
+							properties.put("exchangeName",exchange);
+							properties.put("routingKey", routeKey); 
+							properties.put("data", dataConvert); 
+							properties.put("success", "false"); 
+							properties.put("host", "localhost"); 
 							tack.track("msgProducer", "msgProducer", properties);
 							tack.shutdown();
 						}

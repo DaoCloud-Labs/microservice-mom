@@ -76,10 +76,18 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 			 
 			   //消息消费成功埋点 
          	try {
-         		if(isTacks) {
+         		if(isTacks) { 
 					Map<String, Object> properties=new HashMap<>();
-					properties.put("sender", "消息消费重试成功");
+					properties.put("type", "CONSUMER");
 					properties.put("msgKey", msgEntity.getMsgKey()); 
+					properties.put("sender", msgEntity.getBizClassName()); 
+					properties.put("exchangeName","");
+					properties.put("routingKey", msgEntity.getRouterKey()); 
+					properties.put("data", msgEntity.getMsgContent());
+					properties.put("consumerId", msgEntity.getConsumerClassName()); 
+					properties.put("success", "true"); 
+					properties.put("host", "localhost");  
+					properties.put("IsRestart", "true");
 					tack.track("msgCustomer", "msgCustomer", properties);
 					tack.shutdown();
          		}
@@ -93,11 +101,20 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
             //消息消费失败埋点
 			try {
 				if(isTacks) {
-				Map<String, Object> properties=new HashMap<>();
-				properties.put("sender", "消息消费重试失败");
-				properties.put("msgKey", msgEntity.getMsgKey());  
-				tack.track("msgCustomer", "msgCustomer", properties);
-				tack.shutdown();
+					Map<String, Object> properties=new HashMap<>();
+					properties.put("type", "CONSUMER");
+					properties.put("msgKey", msgEntity.getMsgKey()); 
+					properties.put("sender", msgEntity.getBizClassName()); 
+					properties.put("exchangeName","");
+					properties.put("routingKey", msgEntity.getRouterKey()); 
+					properties.put("data", msgEntity.getMsgContent());
+					properties.put("consumerId", msgEntity.getConsumerClassName()); 
+					properties.put("success", "false"); 
+					properties.put("host", "localhost");
+					properties.put("infoMsg", e.getMessage());
+					properties.put("IsRestart", "true");
+					tack.track("msgCustomer", "msgCustomer", properties);
+					tack.shutdown();
 				}
 			} catch (Exception e1) {
 				log.info("埋点msgCustomer 发生异常");

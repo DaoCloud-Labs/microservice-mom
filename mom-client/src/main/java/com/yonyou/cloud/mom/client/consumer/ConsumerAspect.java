@@ -106,11 +106,15 @@ public class ConsumerAspect {
                     	try {
                     		if(isTacks) {
 							Map<String, Object> properties=new HashMap<>();
-							properties.put("sender", "消息消费成功");
+							properties.put("type", "CONSUMER");
 							properties.put("msgKey", msgKey); 
-							properties.put("static", "success");
-							properties.put("consumerClassName", consumerClassName);
-							properties.put("bizclassName", bizclassName);
+							properties.put("sender", bizclassName); 
+							properties.put("exchangeName",message.getMessageProperties().getReceivedExchange());
+							properties.put("routingKey", message.getMessageProperties().getConsumerQueue()); 
+							properties.put("data", dataConvert);
+							properties.put("consumerId", consumerClassName); 
+							properties.put("success", "true"); 
+							properties.put("host", "localhost"); 
 							tack.track("msgCustomer", "msgCustomer", properties);
 							tack.shutdown();
                     		}
@@ -128,14 +132,19 @@ public class ConsumerAspect {
                         //消息消费失败埋点
 						try {
 							if(isTacks) {
-							Map<String, Object> properties=new HashMap<>();
-							properties.put("sender", "消息消费失败");
-							properties.put("msgKey", msgKey); 
-							properties.put("static", "success");
-							properties.put("consumerClassName", consumerClassName);
-							properties.put("bizclassName", bizclassName);
-							tack.track("msgCustomer", "msgCustomer", properties);
-							tack.shutdown();
+								Map<String, Object> properties=new HashMap<>();
+								properties.put("type", "CONSUMER");
+								properties.put("msgKey", msgKey); 
+								properties.put("sender", bizclassName); 
+								properties.put("exchangeName",message.getMessageProperties().getReceivedExchange());
+								properties.put("routingKey", message.getMessageProperties().getConsumerQueue()); 
+								properties.put("data", dataConvert);
+								properties.put("consumerId", consumerClassName); 
+								properties.put("success", "false"); 
+								properties.put("host", "localhost"); 
+								properties.put("infoMsg", t.getMessage());
+								tack.track("msgCustomer", "msgCustomer", properties);
+								tack.shutdown();
 							}
 						} catch (Exception e1) {
 							LOGGER.info("埋点msgCustomer 发生异常");
