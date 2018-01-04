@@ -59,6 +59,8 @@ public class MqSenderSimpleImpl extends RabbitGatewaySupport implements MqSender
 				properties.put("msg_content", data);
 				properties.put("bizClassName", data.getClass().getName());
 				tack.track("msginit", "mqTrack", properties);
+				tack.flush();
+				LOGGER.info("埋点msgProducer 成功:key="+msgKey.toString()+",data="+data);
 			}
 		} catch (Exception e1) {
 			LOGGER.info("埋点msgProducer 发生异常",e1);
