@@ -1,147 +1,20 @@
-### pom文件
-
-配置pom包，主要是引入消息中间件mom-client 和对spring-boot-starter-amqp的支持
-		因为这里用到JPA 所有加入JPA相关支持
-
+### 引入mom组件
 
 ``` 
 	<dependency>
-			<groupId>com.yonyou.cloud</groupId>
-			<artifactId>mom-client</artifactId>
-			<version>1.0-SNAPSHOT</version>
-    </dependency>
+		<groupId>com.yonyou.cloud</groupId>
+		<artifactId>mom-client</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+    	</dependency>
 ```
 
-
-``` 
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>com.yonyou.cloud</groupId>
-	<artifactId>mom-demo-springboot</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
-
-	<name>mom-demo-springboot</name>
-	<description>Demo project for Spring Boot</description>
-
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.7.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.yonyou.cloud</groupId>
-			<artifactId>mom-client</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>  
-		 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-
-</project>
-``` 
-
-
-
-
-### 配置文件
-
-因为本demo持久层用的spring data JPA 所以有关于JPA相关配置
-application.properties
-
-``` 
-spring.application.name=mom-demo-springboot
-server.port=8181
-spring.rabbitmq.host=10.180.8.171
-spring.rabbitmq.port=5672
-spring.rabbitmq.username=test
-spring.rabbitmq.password=test
- 
-#datasource
-spring.datasource.driverClassName=com.mysql.jdbc.Driver
-spring.datasource.url=jdbc\:mysql\://127.0.0.1\:3306/mq_data?autoReconnect\=true&useUnicode\=true&characterEncoding\=UTF-8
-spring.datasource.username=root
-spring.datasource.password=root
-
-#jpa
-spring.jpa.database-platform=org.hibernate.dialect.MySQL5Dialect
-spring.jpa.generate-ddl=true
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.openInView=true
-spring.jpa.properties.hibernate.show_sql=true
-logging.level.com.yonyou=debug
-logging.level.org.springframework.orm.jpa=debug
-
-
-#Re-resend the task  
-jobs.resend.schedule=0/30 * * * * *
-# Re-consume the task
-jobs.reconsumer.schedule=0/30 * * * * *
-
-``` 
-
-
-### 消息中间件初始化配置
+### 实现回调
 
 对发消息者、队列、收消息者 相关配置
 
 交换机(Exchange)
 交换机有四种类型：Direct, topic, Headers and Fanout 可根据具体场景需要配置;这里我们选着direct "先匹配, 再投送"即在绑定时设定一个 routing_key, 消息的routing_key 匹配时, 才会被交换器投送到绑定的队列中去.
  
-创建连接 
-一般使用RabbitTemplate 和AmqpTemplate创建链接，
-他们的的关系如下：RabbitTemplate   implements  RabbitOperations ；
-				  RabbitOperations  extends     AmqpTemplate
-我们这里使用RabbitTemplate 创建连接
 
 初始化生产者相关实现类
 ``` 				  
