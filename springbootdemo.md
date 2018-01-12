@@ -13,6 +13,14 @@
 1.config
 
 ```
+spring.rabbitmq.host=10.180.4.221
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=mqadmin
+spring.rabbitmq.password=Pass1234
+```
+
+
+```
 import org.springframework.amqp.rabbit.core.RabbitOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
