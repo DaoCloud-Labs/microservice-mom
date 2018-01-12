@@ -1,4 +1,7 @@
-### 引入mom组件
+
+### 生产者用法
+
+1.config
 
 ``` 
 	<dependency>
@@ -8,9 +11,6 @@
     	</dependency>
 ```
 
-### 生产者用法
-
-1.config
 
 ```
 spring.rabbitmq.host=10.180.4.221
@@ -136,366 +136,195 @@ public class ProducerCallbackImpl implements ProducerStoreDBCallback{
 
 ```
 
-### 实现生产者相关接口
+
+### 消费者用法
+
+1.config
+
 ``` 
-package com.yonyou.cloud.mom.demo.msg.callback;
+	<dependency>
+		<groupId>com.yonyou.cloud</groupId>
+		<artifactId>mom-client</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+    	</dependency>
+```
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+```
+spring.rabbitmq.host=10.180.4.221
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=mqadmin
+spring.rabbitmq.password=Pass1234
+```
 
-import com.yonyou.cloud.mom.client.MqSender;
-import com.yonyou.cloud.mom.core.dto.ProducerDto;
-import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
-import com.yonyou.cloud.mom.core.store.callback.ProducerStoreDBCallback;
-import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
-import com.yonyou.cloud.mom.demo.dao.MsgDao;
-import com.yonyou.cloud.mom.demo.msg.entity.MsgEntity;
+```
+import org.ben.mom.consumer.listener.LoginEventListener;
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitOperations;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.support.converter.JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Service
-@Transactional
-public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
-	Logger log=LoggerFactory.getLogger(DemoMsgProducerCallBack.class);
-	
-	@Autowired
-	MsgDao msgDao;
-	
-	@Autowired
-	private MqSender mqSender;
-	
+import com.yonyou.cloud.mom.client.impl.MqSenderDefaultImpl;
 
-	@Override
-	public void saveMsgData(String msgKey, String data, String exchange, String routerKey,String bizClassName)
-			throws StoreDBCallbackException {
-		System.out.println("进入存储消息的逻辑" + msgKey);
-			MsgEntity msg = new MsgEntity();
-			msg.setMsgKey(msgKey);
-			msg.setExchange(exchange);
-			msg.setRouterKey(routerKey);
-			msg.setStatus(StoreStatusEnum.PRODUCER_INIT.getValue());
-			msg.setRetryCount(0);
-			msg.setCreateTime(new Date().getTime());
-			msg.setBizClassName(bizClassName);
-			msg.setMsgContent(data);
-			msgDao.save(msg);
-	}
-	
-	
-	@Override
-	public void update2success(String msgKey) throws StoreDBCallbackException {
-		
-			log.info("消息发送成功" + msgKey);
-			MsgEntity msg=msgDao.findOne(msgKey);
-			msg.setStatus(StoreStatusEnum.PRODUCER_SUCCESS.getValue());
-			msgDao.save(msg);
+@Configuration
+public class MqConfig {
+	@Bean
+	public Queue pointsListenLoginQueue() {
+		return new Queue("consumer-a", true); // 队列持久
 	}
 
-	@Override
-	public void update2faild(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreDBCallbackException {
-		log.info("进入消息发送失败的逻辑" + msgKey);
-		MsgEntity msg = new MsgEntity();
-		msg.setMsgKey(msgKey);
-		msg.setStatus(StoreStatusEnum.PRODUCER_FAILD.getValue());
-		msg.setInfoMsg(infoMsg);
-		msg.setUpdateTime(new Date().getTime());
-		msg.setBizClassName(bizClassName);
-		msg.setExchange(exchange);
-		msg.setRouterKey(routerKey);
-		msg.setMsgContent(data);
-		msgDao.save(msg);
-	}
-	
-  
-	
-	  @Override
-	  public List<ProducerDto> selectResendList(Integer status){
-		  
-		  log.info("扫描需要重新发送的消息" + status);
-		  
-		  List<ProducerDto> producerdtolist=new ArrayList<>();
-		  List<MsgEntity> list= msgDao.findbystatus(status);
-		  for(MsgEntity msg:list) {
-			 ProducerDto dto= new ProducerDto();
-			 dto.setExchange(msg.getExchange());
-			 dto.setMsgKey(msg.getMsgKey());
-			 dto.setRouterKey(msg.getRouterKey());
-			 dto.setMsgContent(msg.getMsgContent());
-			 dto.setBizClassName(msg.getBizClassName());
-			 dto.setMsgContent(msg.getMsgContent());
-			  producerdtolist.add(dto);
-		  }
-		  return producerdtolist;
-	  }
-
-}
-``` 
-
-##### #### 消息发送
-		
-		注入发送mq的默认实现
-		@Autowired
-		private MqSender mqSender;
-		
-		通过send方法发送 （第一个参数是交换机名称；第二个参数是队列名称；第三个参数是发送的对象）
-		
-		LoginMsg msg = new LoginMsg();
-		msg.setLoginName(name);
-		msg.setLoginTime(new Date().getTime());
-		mqSender.send("event-exchange", "login", msg);
-
-
-#### 消费者相关
-消费者需要继承中间件 AbstractConsumerListener类 实现handleMessage接口（拿到消息，实现相关消息消费逻辑）
-``` 
-package com.yonyou.cloud.mom.demo.msg.listener;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.yonyou.cloud.mom.client.MqSender;
-import com.yonyou.cloud.mom.client.consumer.AbstractConsumerListener;
-import com.yonyou.cloud.mom.demo.dao.BizDao;
-import com.yonyou.cloud.mom.demo.dao.ConsumerDao;
-import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
-
-@Service
-public class PointsListenLogin extends AbstractConsumerListener<LoginMsg>{
-	
-	@Autowired
-	public ConsumerDao consumerDao;
-	
-	@Override
-	protected void handleMessage(LoginMsg data) {
-		long fff=consumerDao.count();
-		LOGGER.debug("监听到有人登录了，用户名："+data.getLoginName()+"，发送积分"+fff);
+	@Bean
+	public FanoutExchange eventExchange() {
+		return new FanoutExchange("ben_login");
 	}
 
+	@Bean
+	public Binding PointsBindingLogin() {
+		return BindingBuilder.bind(pointsListenLoginQueue()).to(eventExchange());
+//				.with("queue-key");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer messageContainer1(ConnectionFactory connectionFactory,
+			LoginEventListener loginEventListener) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
+		container.setQueues(pointsListenLoginQueue());
+		container.setExposeListenerChannel(true);
+		container.setMaxConcurrentConsumers(1);
+		container.setConcurrentConsumers(1);
+		container.setAcknowledgeMode(AcknowledgeMode.MANUAL); // 设置确认模式手工确认
+		container.setMessageListener(loginEventListener);
+		container.setMaxConcurrentConsumers(10);//设置最大消费者数量 防止大批量涌入
+		return container;
+	}
+	
+	@Bean
+	public MessageConverter messageConverter() {
+		JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
+		return jsonMessageConverter;
+	}
+	
+	@Bean
+	public MqSenderDefaultImpl mqSenderDefaultImpl(RabbitOperations rabbitOperations) {
+		MqSenderDefaultImpl mqSenderDefaultImpl = new MqSenderDefaultImpl();
+		mqSenderDefaultImpl.setRabbitOperations(rabbitOperations);
+		return mqSenderDefaultImpl;
+	}
+	
 }
 
-``` 
+```
 
+2.实现回调
 
-### 实现消费者相关接口
-``` 
-package com.yonyou.cloud.mom.demo.msg.callback;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.yonyou.cloud.mom.core.dto.ConsumerDto;
-import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
-import com.yonyou.cloud.mom.core.store.callback.ConsumerStoreDbCallback;
-import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
-import com.yonyou.cloud.mom.demo.dao.ConsumerDao;
-import com.yonyou.cloud.mom.demo.msg.entity.ConsumerEntity;
-import com.yonyou.cloud.mom.demo.msg.entity.MsgEntity;
-
-@Service
-@Transactional
-public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
+```
+@Component
+public class ConsumerCallbackImpl implements ConsumerStoreDbCallback{
 
 	@Autowired
-	ConsumerDao consumerDao;
-
+	ConsumerMsgMapper consumerMsgMapper;
+	
 	@Override
 	public boolean exist(String msgKey) throws StoreDBCallbackException {
-		ConsumerEntity msg = consumerDao.findOne(msgKey);
-		if(msg != null ){
+		if(consumerMsgMapper.selectByPrimaryKey(msgKey)!=null) {
 			return true;
 		}
+
 		return false;
 	}
 
 	@Override
 	public boolean isProcessing(String msgKey) throws StoreDBCallbackException {
-		log.info("判断是否已经接受过这条消息" + msgKey);
-		MsgEntity msg = consumerDao.findByMsgKeyAndStatus(msgKey, StoreStatusEnum.CONSUMER_PROCESS.getValue());
-		if(msg==null){
-//			consumerDao.findOne(msgKey);
-//			ConsumerEntity entity=new ConsumerEntity();
-//			entity.setMsgKey(msgKey);
-			return false;
+		ConsumerMsg msg = new ConsumerMsg();
+		msg.setMsgKey(msgKey);
+		msg.setStatus(103);
+		if(consumerMsgMapper.select(msg)!=null&&consumerMsgMapper.select(msg).size()==1) {
+			return true;
 		}
-		return true;
+	
+		return false;
 	}
 
 	@Override
-	public void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException {
-		log.info("保存接受到的消息" + msgKey);
-		ConsumerEntity msg = consumerDao.findOne(msgKey);
-		if(msg==null){
-			ConsumerEntity msgnew=new ConsumerEntity();
-			msgnew.setMsgKey(msgKey);
-			msgnew.setStatus(StoreStatusEnum.CONSUMER_PROCESS.getValue());
-			msgnew.setUpdateTime(new Date().getTime());
-			msgnew.setMsgContent(data);
-			msgnew.setExchange(exchange);
-			msgnew.setRouterKey(routerKey);
-			msgnew.setBizClassName(bizClassName);
-			msgnew.setConsumerClassName(consumerClassName);
-			consumerDao.save(msgnew);
-		}else{
-			throw new StoreDBCallbackException("can not find msg "+msgKey);
-		}
+	public void updateMsgProcessing(String msgKey, String data, String exchange, String routerKey,
+			String consumerClassName, String bizClassName) throws StoreDBCallbackException {
+		ConsumerMsg msg = new ConsumerMsg();
+		msg.setMsgKey(msgKey);
 		
+		if(consumerMsgMapper.selectOne(msg)!=null) {
+			msg.setStatus(103);
+			consumerMsgMapper.updateByPrimaryKeySelective(msg);
+		}else {
+			msg.setBizClassName(bizClassName);
+			msg.setConsumerClassName(consumerClassName);
+			msg.setCreateTime(new Date());
+			msg.setExchange(exchange);
+			msg.setMsgContent(data);
+			msg.setMsgKey(msgKey);
+			msg.setRouterKey(routerKey);
+			msg.setStatus(103);
+			consumerMsgMapper.insert(msg);
+		}
 	}
 
 	@Override
 	public void updateMsgSuccess(String msgKey) throws StoreDBCallbackException {
-	
-		log.info("消费成功" + msgKey)
-		ConsumerEntity msg = consumerDao.findOne(msgKey);
-		if(msg!=null){
-			msg.setStatus(StoreStatusEnum.CONSUMER_SUCCESS.getValue());
-			msg.setUpdateTime(new Date().getTime());
-			consumerDao.save(msg);
-		}else{
-			throw new StoreDBCallbackException("can not find msg "+msgKey);
-		}
+		ConsumerMsg msg = new ConsumerMsg();
+		msg.setMsgKey(msgKey);
+		msg.setStatus(101);
+		consumerMsgMapper.updateByPrimaryKeySelective(msg);
 	}
 
 	@Override
 	public void updateMsgFaild(String msgKey) throws StoreDBCallbackException {
-	
-		log.info("消费失败" + msgKey)
-		ConsumerEntity msg = consumerDao.findOne(msgKey);
-		if(msg!=null){
-			msg.setStatus(StoreStatusEnum.CONSUMER_FAILD.getValue());
-			msg.setUpdateTime(new Date().getTime());
-			consumerDao.save(msg);
-		}else{
-			throw new StoreDBCallbackException("can not find msg "+msgKey);
-		}
+		ConsumerMsg msg = new ConsumerMsg();
+		msg.setMsgKey(msgKey);
+		msg.setStatus(102);
+		consumerMsgMapper.updateByPrimaryKeySelective(msg);
 		
 	}
-	
+
 	@Override
-	 public List<ConsumerDto> selectReConsumerList(Integer status){
-		log.info("扫描哪些需要重新消费的消息" + msgKey)
-		List<ConsumerDto> dtolist=new ArrayList<>();
-		List<ConsumerEntity> list=consumerDao.findbystatus(status);
-		for(ConsumerEntity consumer:list) {
-			ConsumerDto dto=new ConsumerDto();
-			dto.setMsgKey(consumer.getMsgKey());
-			dto.setMsgContent(consumer.getMsgContent());
-			dto.setConsumerClassName(consumer.getConsumerClassName());
-			dto.setBizClassName(consumer.getBizClassName());
-			dto.setStatus(consumer.getStatus());
-//			dto.setRetryCount(consumer.getRetryCount());
-            dto.setRouterKey(consumer.getRouterKey());//队列名称
-			dtolist.add(dto);
-		}
-		return dtolist;
-	 }
-	
+	public List<ConsumerDto> selectReConsumerList(Integer status) {
+		return null;
+	}
 
 }
-``` 
-
-
-### 生产者数据操作接口ProducerStoreDBCallback方法以及参数说明
- 
- 
-
-```
-//保存消息（消息key,消息内容，交换机名称，队列名称，消息对象类名）
-    void saveMsgData(String msgKey, String data, String exchange, String routerKey,String bizClassName) throws StoreDBCallbackException;   
-   
-   //发送成功 （消息key）
-    void update2success(String msgKey)throws StoreDBCallbackException;
-
-    //处理为初始化失败 （消息key,消息内容，发送时长，交换机名称，队列名称，消息内容，消息对象类名）
-    void update2faild(String msgKey, String infoMsg, Long costTime,String exchange, String routerKey,String data,String bizClassName) throws StoreDBCallbackException;
-    
-    //获取需要重新发送的内容（消息状态）
-    public List<ProducerDto> selectResendList(Integer status);
 ```
 
- 
- 
- 
-### 消费者数据操作接口ConsumerStoreDbCallback方法及参数说明  
-
-    
+3.实现监听逻辑
 
 ```
-    //根据msgkey判断消息是否已经存在（消息key） 
-    boolean exist(String msgKey) throws StoreDBCallbackException;
-
-    //根据msgkey判断消息是否在处理中 （消息key）
-    boolean isProcessing(String msgKey) throws StoreDBCallbackException;
-    
-    
-    //更新消息状态为处理中 （消息key，消息内容，交换机名称，队列名称，消费者对象名称，消息体对象名称）
-    void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException;
-    
-    
-    // 更新为成功 （消息key）
-    void updateMsgSuccess(String msgKey) throws StoreDBCallbackException;
-    
-    
-    //更新为失败 （消息key）
-    void updateMsgFaild(String msgKey) throws StoreDBCallbackException;
-    
-    //获取需要重新消费的内容 （消息状态）
-    public List<ConsumerDto> selectReConsumerList(Integer status);
-```
-
- 
-
-## # 消息中间件消息状态StoreStatusEnum枚举
- 
-
-```
-    PRODUCER_INIT(0),      消息发送初始化
-	PRODUCER_SUCCESS(1),   消息发送成功
-	PRODUCER_FAILD(2),     消息发送失败
-	CONSUMER_PROCESS(100), 消息消费初始化
-	CONSUMER_SUCCESS(101), 消息消费成功
-	CONSUMER_FAILD(102);   消息消费失败
-```
-
+@Component
+public class LoginEventListener extends AbstractConsumerListener<LoginEvent>{
 	
-### ProducerDto
-
-```
-private String msgKey;
-	private String msgContent;
-	private Integer status;
-	private String exchange;
-	private String routerKey;
-	private String bizClassName;
-```
-
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-### 消费者 ConsumerDto  
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	TmUserMapper tmUserMapper;
+
+	@Override
+	protected void handleMessage(LoginEvent data) {
+		logger.info("处理登录事件");
+		String userName = data.getUserName();
+		Example example = new Example(TmUser.class);
+		example.createCriteria().andEqualTo("userName", userName);
+		TmUser user = new TmUser();
+		user.setUserName(userName+"a");
+		tmUserMapper.updateByExampleSelective(user, example);
+	}
+	
+}
 
 ```
-    private String msgKey;
-	private String msgContent;
-	private Integer status;
-	private String infoMsg;
-	private Integer retryCount;
-	private String routerKey;//队列名称
-	private String consumerClassName;//消费者类名
-	private String bizClassName;
-```
-
-
-
-
-
-
-
