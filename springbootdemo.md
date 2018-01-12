@@ -8,97 +8,125 @@
     	</dependency>
 ```
 
-### 实现回调
+### 生产者用法
 
-对发消息者、队列、收消息者 相关配置
+1.config
 
-交换机(Exchange)
-交换机有四种类型：Direct, topic, Headers and Fanout 可根据具体场景需要配置;这里我们选着direct "先匹配, 再投送"即在绑定时设定一个 routing_key, 消息的routing_key 匹配时, 才会被交换器投送到绑定的队列中去.
- 
-
-初始化生产者相关实现类
-``` 				  
-package com.yonyou.cloud.mom.demo.config;
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+```
 import org.springframework.amqp.rabbit.core.RabbitOperations;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.support.converter.JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.yonyou.cloud.mom.client.impl.MqSenderDefaultImpl;
-import com.yonyou.cloud.mom.core.store.ProducerMsgStore;
-import com.yonyou.cloud.mom.core.store.impl.DbStoreProducerMsg;
-import com.yonyou.cloud.mom.core.util.SpringUtil;
-import com.yonyou.cloud.mom.demo.msg.listener.PointsListenLogin;
+import org.springframework.amqp.support.converter.JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 
 @Configuration
-@ComponentScan(basePackages = "com.yonyou.cloud.mom")
 public class MqConfig {
 	
-	
-	//初始化生产者相关实现类
-	@Bean
-	public MqSenderDefaultImpl mqSenderDefaultImpl(RabbitOperations rabbitOperations) {
-		MqSenderDefaultImpl mqSenderDefaultImpl = new MqSenderDefaultImpl();
-		mqSenderDefaultImpl.setRabbitOperations(rabbitOperations);
-		return mqSenderDefaultImpl;
-	}
-
-	@Bean
-	public SpringUtil springUtil() {
-		return new SpringUtil();
-	}
- 
-	@Bean
-	public Queue pointsListenLoginQueue() {
-		return new Queue("points-login", true); // 队列持久
-	}
-
-	//设定交换机类型
-	@Bean
-	public DirectExchange eventExchange() {
-		return new DirectExchange("event-exchange");
-	}
-
-	//交换机和队列绑定
-	@Bean
-	public Binding PointsBindingLogin() {
-		return BindingBuilder.bind(pointsListenLoginQueue()).to(eventExchange()).with("login");
-	}
-
-	
-	//初始化监听者
-	@Bean
-	public SimpleMessageListenerContainer messageContainer1(ConnectionFactory connectionFactory,
-			PointsListenLogin pointsListenLogin) {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
-		container.setQueues(pointsListenLoginQueue());
-		container.setExposeListenerChannel(true);
-		container.setMaxConcurrentConsumers(1);
-		container.setConcurrentConsumers(1);
-		container.setAcknowledgeMode(AcknowledgeMode.MANUAL); // 设置确认模式手工确认
-		container.setMessageListener(pointsListenLogin);
-		container.setMaxConcurrentConsumers(10);//设置最大消费者数量 防止大批量涌入
-		return container;
-	}
-
-	@Bean
-	public MessageConverter messageConverter() {
-		JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
-		return jsonMessageConverter;
-	}
- 
+		@Bean
+		public MqSenderDefaultImpl mqSenderDefaultImpl(RabbitOperations rabbitOperations) {
+			MqSenderDefaultImpl mqSenderDefaultImpl = new MqSenderDefaultImpl();
+			mqSenderDefaultImpl.setRabbitOperations(rabbitOperations);
+			return mqSenderDefaultImpl;
+		}
+		
+		@Bean
+		public MessageConverter messageConverter() {
+			JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
+			return jsonMessageConverter;
+		}
 }
 
+```
+
+
+2.实现回调
+
+``` 				  
+@Component
+public class ProducerCallbackImpl implements ProducerStoreDBCallback{
+	
+	@Autowired
+	MsgService msgService;
+
+	@Override
+	public void saveMsgData(String msgKey, String data, String exchange, String routerKey, String bizClassName)
+			throws StoreDBCallbackException {
+		
+		ProducerMsg msg = new ProducerMsg();
+		msg.setMsgKey(msgKey);
+		msg.setMsgContent(data);
+		msg.setExchange(exchange);
+		msg.setRouterKey(routerKey);
+		msg.setBizClassName(bizClassName);
+		msg.setStatus(0);
+		msgService.insert(msg);;
+		
+	}
+
+	@Override
+	public void update2success(String msgKey) throws StoreDBCallbackException {
+		ProducerMsg msg = new ProducerMsg();
+		msg.setMsgKey(msgKey);
+		msg.setStatus(1);
+		msgService.updateSelectiveById(msg);
+	}
+
+	@Override
+	public void update2faild(String msgKey, String infoMsg, Long costTime, String exchange, String routerKey,
+			String data, String bizClassName) throws StoreDBCallbackException {
+		ProducerMsg msg = new ProducerMsg();
+		msg.setMsgKey(msgKey);
+		msg.setStatus(2);
+		msgService.updateSelectiveById(msg);		
+	}
+
+	@Override
+	public List<ProducerDto> selectResendList(Integer status) {
+		ProducerMsg msg = new ProducerMsg();
+		msg.setStatus(2);
+		List<ProducerMsg> msgList = msgService.selectList(msg);
+		List<ProducerDto> returnList = new ArrayList<ProducerDto>();
+		for(int i = 0 ; i<msgList.size();i++) {
+			ProducerDto returnDto = new ProducerDto();
+			returnDto.setBizClassName(msgList.get(i).getBizClassName());
+			returnDto.setExchange(msgList.get(i).getExchange());
+			returnDto.setMsgContent(msgList.get(i).getMsgContent());
+			returnDto.setMsgKey(msgList.get(i).getMsgKey());
+			returnDto.setRouterKey(msgList.get(i).getRouterKey());
+			returnDto.setStatus(status);
+			returnList.add(returnDto);
+		}
+		
+		return returnList;
+	}
+}
+
+
 ``` 
+
+
+3.使用
+
+```
+	public boolean userLogin(String userName) {
+		//业务逻辑部分
+		TmUser user = new TmUser();
+		user.setUserName(userName);
+		insert(user);
+		
+		LoginEvent event = new LoginEvent();
+		event.setUserName(userName);
+		
+		
+		//发送消息
+		mqSender.send("ben_login", "login", event);
+		
+		return true;
+	}
+
+```
 
 ### 实现生产者相关接口
 ``` 
