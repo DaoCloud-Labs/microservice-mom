@@ -90,7 +90,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 				if(isTacks) {
 					Map<String, Object> properties=new HashMap<>();
 					properties.put("type", "PRODUCER");
-					properties.put("msgKey", msgKey); 
+					properties.put("msgKey", msgKey.toString()); 
 					properties.put("sender", data.getClass().getName()); 
 					properties.put("exchangeName",exchange);
 					properties.put("routingKey", routeKey); 
@@ -164,7 +164,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 						if(isTacks) {
 							Map<String, Object> properties=new HashMap<>();
 							properties.put("type", "PRODUCER");
-							properties.put("msgKey", msgKey); 
+							properties.put("msgKey", msgKey.toString()); 
 							properties.put("sender", data.getClass().getName()); 
 							properties.put("serviceUrl",address.ApplicationAddress());
 							properties.put("exchangeName",exchange);
