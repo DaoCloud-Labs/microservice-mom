@@ -48,6 +48,7 @@ public class MessageRest {
 				reConsumer.reConsumer();
 			} catch (Exception e) {
 				e.printStackTrace();
+				return false;
 			}
 		}
 		return true;
