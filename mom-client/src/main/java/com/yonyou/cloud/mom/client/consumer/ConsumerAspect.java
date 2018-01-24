@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.rabbitmq.client.Channel;
+import com.yonyou.cloud.mom.client.config.AddressConfig;
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
@@ -43,6 +44,9 @@ public class ConsumerAspect {
 	
 	@Value("${track.isTacks:false}")
 	private Boolean isTacks; 
+	
+	@Autowired
+	AddressConfig address;
 	
     private ConsumerMsgStore dbStoreConsumerMsg  = new DbStoreConsumerMsg();
     
@@ -114,7 +118,8 @@ public class ConsumerAspect {
 							properties.put("data", dataConvert);
 							properties.put("consumerId", consumerClassName); 
 							properties.put("success", "true"); 
-							properties.put("host", "localhost"); 
+							properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
 							tack.track("msgCustomer", "msgCustomer", properties);
 							tack.shutdown();
                     		}
@@ -141,7 +146,8 @@ public class ConsumerAspect {
 								properties.put("data", dataConvert);
 								properties.put("consumerId", consumerClassName); 
 								properties.put("success", "false"); 
-								properties.put("host", "localhost"); 
+								properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
+								properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
 								properties.put("infoMsg", t.getMessage());
 								tack.track("msgCustomer", "msgCustomer", properties);
 								tack.shutdown();

@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.yonyou.cloud.mom.client.config.AddressConfig;
 import com.yonyou.cloud.mom.core.dto.ConsumerDto;
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
@@ -38,40 +40,39 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	@Value("${track.isTacks:false}")
 	private Boolean isTacks; 
 	
+	@Autowired
+	AddressConfig address;
+	
 	@Override
 	public void reConsumer() throws  Exception {
 		List<ConsumerDto> list=msgStore.selectReConsumerList(StoreStatusEnum.CONSUMER_FAILD.getValue());
 		Iterator<ConsumerDto> it=list.iterator();
 		 while (it.hasNext()) {
 			 ConsumerDto msgEntity = it.next();
-			 log.info(msgEntity.getMsgContent()+"消息内容");
-			
+			 log.info(msgEntity.getMsgContent()+"消息内容");			
 			 executeReConsumer(msgEntity);
 
 		}
 
 	}
 	
-    
+ 
+	
+ 
     @Transactional
     @SuppressWarnings("unchecked")
     private void executeReConsumer( ConsumerDto msgEntity) {
 		try {
 			//创建一个类
-			Class c =Class.forName(msgEntity.getBizClassName()); 
+			 Class c =Class.forName(msgEntity.getBizClassName()); 
 			 JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
 			//把json转化成指定的对象
 			 Object ojbClass = JSONObject.toBean(obj,c);
 			 
-			 resendRabbitQ( msgEntity.getRouterKey(),msgEntity.getMsgKey(),  ojbClass); 
-			 
-			 
-//			 Class<?> ConsumerClass =Class.forName(msgEntity.getConsumerClassName()); 
-//			Object objListen= getConsumerListen(ConsumerClass);
-//			AbstractConsumerListener consumerListener=(AbstractConsumerListener) objListen;
-//			consumerListener.handleMessage(ojbClass); 
+			 resendRabbitQ(msgEntity.getExchange(),msgEntity.getRouterKey(),msgEntity.getMsgKey(),  ojbClass); 
+ 
 			 //更新状态
-//			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
+			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
 			 System.out.println("执行完毕");
 			 
 			   //消息消费成功埋点 
@@ -86,7 +87,8 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("data", msgEntity.getMsgContent());
 					properties.put("consumerId", msgEntity.getConsumerClassName()); 
 					properties.put("success", "true"); 
-					properties.put("host", "localhost");  
+					properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
+					properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress")); 
 					properties.put("IsRestart", "true");
 					tack.track("msgCustomer", "mqTrack", properties);
 					tack.shutdown();
@@ -96,8 +98,6 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 				}
          	
 		} catch (Exception e) {
-//			throw new AmqpException(e);
-			
             //消息消费失败埋点
 			try {
 				if(isTacks) {
@@ -110,7 +110,8 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("data", msgEntity.getMsgContent());
 					properties.put("consumerId", msgEntity.getConsumerClassName()); 
 					properties.put("success", "false"); 
-					properties.put("host", "localhost");
+					properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
+					properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
 					properties.put("infoMsg", e.getMessage());
 					properties.put("IsRestart", "true");
 					tack.track("msgCustomer", "mqTrack", properties);
@@ -125,7 +126,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
     
     
     
-	protected void resendRabbitQ(String routeKey, String correlation, Object data) {
+	protected void resendRabbitQ( String Exchange,String routeKey, String correlation, Object data) {
 
 		rabbitTemplate.convertAndSend(routeKey, data, new MessagePostProcessor() {
 

@@ -108,6 +108,14 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		}
 		return dtolist;
 	 }
+
+	@Override
+	public Boolean resetErrorCount(String msgKey) {
+		ConsumerEntity msg = consumerDao.findOne(msgKey);
+		msg.setRetryCount(0);
+		consumerDao.save(msg);
+		return null;
+	}
 	
 
 }

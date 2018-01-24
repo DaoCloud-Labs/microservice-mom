@@ -63,4 +63,10 @@ public interface ConsumerMsgStore {
      * @return
      */
     public List<ConsumerDto> selectReConsumerList(Integer status);
+    
+    /**
+     * 重置消费失败的次数
+     * @param msgKey
+     */
+    public Boolean resetErrorCount(String msgKey);
 }

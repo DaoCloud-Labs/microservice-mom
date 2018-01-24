@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.yonyou.cloud.mom.client.MqSender;
+import com.yonyou.cloud.mom.client.config.AddressConfig;
 import com.yonyou.cloud.mom.core.dto.ProducerDto;
 import com.yonyou.cloud.mom.core.store.ProducerMsgStore;
 import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
@@ -28,7 +28,6 @@ import com.yonyou.cloud.mom.core.transaction.executor.AfterCommitExecutorDefault
 import com.yonyou.cloud.mom.core.transaction.executor.PreCommitExecutorDefaultImpl;
 import com.yonyou.cloud.mom.core.transaction.executor.TransactionExecutor;
 import com.yonyou.cloud.track.Track;
-
 import net.sf.json.JSONObject;
 
 /**
@@ -38,7 +37,7 @@ import net.sf.json.JSONObject;
  *
  */
 @Service
-public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSender {
+public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSender{
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(MqSenderDefaultImpl.class);
 
@@ -50,15 +49,18 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 	// msg Db Store的实现
 	@Autowired
-	private ProducerMsgStore msgStore ;//= new DbStoreProducerMsg();
+	private ProducerMsgStore msgStore ; 
 	
 	
 	@Autowired
 	Track tack; 
 	
 	@Value("${track.isTacks:false}")
-	private Boolean isTacks; 
-
+	private Boolean isTacks;  
+	
+	@Autowired
+	AddressConfig address;
+	
 	@Override
 	@Transactional
 	public void send(String exchange, String routeKey, Object data, String ...bizCodes) {
@@ -94,7 +96,8 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					properties.put("routingKey", routeKey); 
 					properties.put("data", dataConvert); 
 					properties.put("success", "true"); 
-					properties.put("host", "localhost"); 
+					properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
+					properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
 					tack.track("msginit", "mqTrack", properties);
 					tack.shutdown();
 				}
@@ -142,7 +145,8 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("routingKey", routeKey); 
 							properties.put("data", dataConvert); 
 							properties.put("success", "true"); 
-							properties.put("host", "localhost"); 
+							properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
 							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
@@ -162,11 +166,14 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("type", "PRODUCER");
 							properties.put("msgKey", msgKey); 
 							properties.put("sender", data.getClass().getName()); 
+							properties.put("serviceUrl",address.ApplicationAddress());
 							properties.put("exchangeName",exchange);
 							properties.put("routingKey", routeKey); 
 							properties.put("data", dataConvert); 
 							properties.put("success", "false"); 
-							properties.put("host", "localhost"); 
+							properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
+							
 							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
@@ -188,7 +195,6 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
                 try {
 //                    message.getMessageProperties().setCorrelationIdString(correlation);
-                	
                 	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
                     message.getMessageProperties().setContentType("json");
                    
@@ -234,7 +240,6 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 		 while (it.hasNext()) {
 			 ProducerDto msgEntity = it.next();
 			 LOGGER.info(msgEntity.getMsgContent()+"消息内容");
-			
 			 
 			try {
 				 Class c =Class.forName(msgEntity.getBizClassName()); 
@@ -247,5 +252,4 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 			}
 		}
 	}
-
 }

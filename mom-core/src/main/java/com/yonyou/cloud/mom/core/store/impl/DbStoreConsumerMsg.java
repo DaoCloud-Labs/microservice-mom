@@ -21,58 +21,62 @@ import com.yonyou.cloud.mom.core.util.SpringUtil;
 @Component
 public class DbStoreConsumerMsg implements ConsumerMsgStore {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DbStoreConsumerMsg.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DbStoreConsumerMsg.class);
 
- 
-    private ConsumerStoreDbCallback getCallBack(){
-    	ConsumerStoreDbCallback callback = (ConsumerStoreDbCallback) SpringUtil.getBean(ConsumerStoreDbCallback.class);
-    	return callback;
-    }
-    
-  
+	private ConsumerStoreDbCallback getCallBack() {
+		ConsumerStoreDbCallback callback = (ConsumerStoreDbCallback) SpringUtil.getBean(ConsumerStoreDbCallback.class);
+		return callback;
+	}
 
 	@Override
 	public boolean exist(String msgKey) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
 		boolean isExist = callback.exist(msgKey);
-        return isExist;
+		return isExist;
 	}
-
 
 	@Override
 	public boolean isProcessing(String msgKey) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
 		boolean isProcessing = callback.isProcessing(msgKey);
-        return isProcessing;
-		
-	}
+		return isProcessing;
 
+	}
 
 	@Override
-	public void updateMsgProcessing(String msgKey,String data,String exchange,String queue,String consumerClassName,String bizClassName) throws StoreException {
+	public void updateMsgProcessing(String msgKey, String data, String exchange, String queue, String consumerClassName,
+			String bizClassName) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
-		callback.updateMsgProcessing(msgKey,data,exchange,queue,consumerClassName,bizClassName);
+		callback.updateMsgProcessing(msgKey, data, exchange, queue, consumerClassName, bizClassName);
 	}
-
 
 	@Override
 	public void updateMsgSuccess(String msgKey) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
 		callback.updateMsgSuccess(msgKey);
-		
-	}
 
+	}
 
 	@Override
 	public void updateMsgFaild(String msgKey) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
 		callback.updateMsgFaild(msgKey);
-		
+
 	}
-	
+
 	@Override
-	public List<ConsumerDto> selectReConsumerList(Integer status){
+	public List<ConsumerDto> selectReConsumerList(Integer status) {
 		ConsumerStoreDbCallback callback = getCallBack();
 		return callback.selectReConsumerList(status);
-	 }
+	}
+
+	/**
+	 * 重置消费失败的次数
+	 * 
+	 * @param msgKey
+	 */
+	public Boolean resetErrorCount(String msgKey) {
+		ConsumerStoreDbCallback callback = getCallBack();
+		return callback.resetErrorCount(msgKey);
+	}
 }

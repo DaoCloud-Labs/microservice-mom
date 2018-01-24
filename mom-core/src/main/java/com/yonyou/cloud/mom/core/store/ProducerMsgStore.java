@@ -37,4 +37,10 @@ public interface ProducerMsgStore {
      * @return
      */
     List<ProducerDto> selectResendList(Integer status);
+    
+    /**
+     * 重置发送失败的次数
+     * @param msgKey
+     */
+    public Boolean resetErrorCount(String msgKey);
 }

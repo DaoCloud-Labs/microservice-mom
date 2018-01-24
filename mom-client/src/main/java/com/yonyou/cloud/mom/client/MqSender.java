@@ -25,5 +25,5 @@ public interface MqSender {
 	/**
 	 * 消息重新发送
 	 */
-	void resend();
+	void resend(); 
 }
