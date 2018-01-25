@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.ProducerMsgStore;
-import com.yonyou.cloud.mom.client.MqSender;
 import com.yonyou.cloud.mom.client.consumer.ReConsumerDefault;
+import com.yonyou.cloud.mom.client.producer.MqSender;
 
 @RestController
 @RequestMapping("/msg")
@@ -40,12 +40,12 @@ public class MessageRest {
 		if (type.equals("producer")) {
 			logger.info("生产者重置发送失败次数" + msgKey);
 			msgStore.resetErrorCount(msgKey);
-			mqSender.resend();
+			mqSender.reSendOne(msgKey);
 		} else {
 			logger.info("消费者重置消费失败次数" + msgKey);
 			consumerMsgStore.resetErrorCount(msgKey);
 			try {
-				reConsumer.reConsumer();
+				reConsumer.reConsumerOne(msgKey);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;

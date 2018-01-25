@@ -2,10 +2,7 @@ package com.yonyou.cloud.mom.demo.msg.listener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.yonyou.cloud.mom.client.MqSender;
 import com.yonyou.cloud.mom.client.consumer.AbstractConsumerListener;
-import com.yonyou.cloud.mom.demo.dao.BizDao;
 import com.yonyou.cloud.mom.demo.dao.ConsumerDao;
 import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
 

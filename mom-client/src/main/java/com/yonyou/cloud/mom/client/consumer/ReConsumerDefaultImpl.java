@@ -1,5 +1,6 @@
 package com.yonyou.cloud.mom.client.consumer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,18 +45,29 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	AddressConfig address;
 	
 	@Override
-	public void reConsumer() throws  Exception {
+	public void reConsumerAllFail() throws  Exception {
 		List<ConsumerDto> list=msgStore.selectReConsumerList(StoreStatusEnum.CONSUMER_FAILD.getValue());
+		reConsumerExecute(list);
+
+	}
+	
+	@Override
+	public void reConsumerOne(String msgKey) throws  Exception {
+		log.info("重新消费"+msgKey);
+		ConsumerDto dto=msgStore.selectReConsumerList(msgKey);
+		List<ConsumerDto> list=new ArrayList<>();
+		list.add(dto);
+		reConsumerExecute(list);
+	}
+	
+	public void reConsumerExecute(List<ConsumerDto> list) {
 		Iterator<ConsumerDto> it=list.iterator();
 		 while (it.hasNext()) {
 			 ConsumerDto msgEntity = it.next();
 			 log.info(msgEntity.getMsgContent()+"消息内容");			
 			 executeReConsumer(msgEntity);
-
 		}
-
 	}
-	
  
 	
  
@@ -73,7 +85,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
  
 			 //更新状态
 			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
-			 System.out.println("执行完毕");
+			 
 			 
 			   //消息消费成功埋点 
          	try {

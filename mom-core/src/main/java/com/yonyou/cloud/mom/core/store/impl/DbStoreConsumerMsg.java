@@ -69,6 +69,12 @@ public class DbStoreConsumerMsg implements ConsumerMsgStore {
 		ConsumerStoreDbCallback callback = getCallBack();
 		return callback.selectReConsumerList(status);
 	}
+	@Override
+	 public ConsumerDto selectReConsumerList(String msgKey) {
+		ConsumerStoreDbCallback callback = getCallBack();
+		return callback.selectReConsumerList(msgKey);
+	}
+	
 
 	/**
 	 * 重置消费失败的次数

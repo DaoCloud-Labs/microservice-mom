@@ -37,6 +37,13 @@ public interface ProducerMsgStore {
      * @return
      */
     List<ProducerDto> selectResendList(Integer status);
+   
+    /**
+     * 根据key扫描需要重新发送的消息
+     * @param key
+     * @return
+     */
+    ProducerDto selectResendList(String key);
     
     /**
      * 重置发送失败的次数

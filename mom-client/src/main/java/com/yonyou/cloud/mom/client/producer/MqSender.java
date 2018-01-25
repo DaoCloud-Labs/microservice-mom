@@ -1,4 +1,4 @@
-package com.yonyou.cloud.mom.client;
+package com.yonyou.cloud.mom.client.producer;
 
 
 public interface MqSender {
@@ -23,7 +23,13 @@ public interface MqSender {
 	
 	
 	/**
-	 * 消息重新发送
+	 * 重发所有失败的信息
 	 */
-	void resend(); 
+	void reSendAllFail(); 
+	
+	/**
+	 * 根据key重发信息
+	 * @param msgKey
+	 */
+	void reSendOne(String msgKey); 
 }

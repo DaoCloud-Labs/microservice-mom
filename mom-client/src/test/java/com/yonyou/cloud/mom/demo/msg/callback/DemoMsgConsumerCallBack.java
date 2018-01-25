@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,6 +116,14 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		msg.setRetryCount(0);
 		consumerDao.save(msg);
 		return null;
+	}
+
+	@Override
+	public ConsumerDto selectReConsumerList(String msgKey) {
+		ConsumerEntity entity = consumerDao.findOne(msgKey);
+		ConsumerDto dto = new ConsumerDto();
+		BeanUtils.copyProperties(entity, dto);
+		return dto;
 	}
 	
 

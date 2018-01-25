@@ -6,11 +6,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yonyou.cloud.mom.client.MqSender;
+import com.yonyou.cloud.mom.client.producer.MqSender;
 import com.yonyou.cloud.mom.core.dto.ProducerDto;
 import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
 import com.yonyou.cloud.mom.core.store.callback.ProducerStoreDBCallback;
@@ -96,6 +97,14 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 		msg.setRetryCount(0);
 		msgDao.save(msg);
 		return true;
+	}
+
+	@Override
+	public ProducerDto selectResendList(String Msgkey) {
+		MsgEntity producer=msgDao.findOne(Msgkey);
+		ProducerDto dto=new ProducerDto();
+		BeanUtils.copyProperties(producer, dto);
+		return 	dto;
 	}
 
 }

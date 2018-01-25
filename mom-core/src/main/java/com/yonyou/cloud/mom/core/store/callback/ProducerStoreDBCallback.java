@@ -43,6 +43,8 @@ public interface ProducerStoreDBCallback{
      */
     public List<ProducerDto> selectResendList(Integer status);
     
+    public ProducerDto selectResendList(String Msgkey);
+    
     /**
      * 重置发送失败的次数
      * @param msgKey

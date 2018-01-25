@@ -1,6 +1,7 @@
-package com.yonyou.cloud.mom.client.impl;
+package com.yonyou.cloud.mom.client.producer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.yonyou.cloud.mom.client.MqSender;
 import com.yonyou.cloud.mom.client.config.AddressConfig;
 import com.yonyou.cloud.mom.core.dto.ProducerDto;
 import com.yonyou.cloud.mom.core.store.ProducerMsgStore;
@@ -151,7 +151,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("success", "false"); 
 							properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
 							properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
-							
+							properties.put("infoMsg", e.getMessage());
 							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
@@ -212,19 +212,31 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	
 	
 	@Override
-	public void resend(){
-		List<ProducerDto> list=msgStore.selectResendList(StoreStatusEnum.PRODUCER_FAILD.getValue());
-		Iterator<ProducerDto> it=list.iterator();
-		 while (it.hasNext()) {
-			 ProducerDto msgEntity = it.next();
-			 LOGGER.info(msgEntity.getMsgContent()+"消息内容");
-			 
+	public void reSendAllFail() {
+		List<ProducerDto> list = msgStore.selectResendList(StoreStatusEnum.PRODUCER_FAILD.getValue());
+		sendListToMQ(list);
+	} 
+	
+	@Override
+	public void reSendOne(String msgKey) {
+		List<ProducerDto> list = new ArrayList<>();
+		ProducerDto dto=msgStore.selectResendList(msgKey);
+		list.add(dto);
+		sendListToMQ(list);
+	}
+
+	public void sendListToMQ(List<ProducerDto> list) {
+		Iterator<ProducerDto> it = list.iterator();
+		while (it.hasNext()) {
+			ProducerDto msgEntity = it.next();
+			LOGGER.info(msgEntity.getMsgContent() + "消息内容");
+
 			try {
-				 Class c =Class.forName(msgEntity.getBizClassName()); 
-				 JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
-				 Object ojbClass = JSONObject.toBean(obj,c);
-				 
-				 sendToMQ(msgEntity.getExchange(), msgEntity.getRouterKey(), msgEntity.getMsgKey(), ojbClass);
+				Class c = Class.forName(msgEntity.getBizClassName());
+				JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
+				Object ojbClass = JSONObject.toBean(obj, c);
+
+				sendToMQ(msgEntity.getExchange(), msgEntity.getRouterKey(), msgEntity.getMsgKey(), ojbClass);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
