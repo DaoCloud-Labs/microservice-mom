@@ -82,29 +82,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 		} catch (IOException e) {
 			throw new AmqpException(e);
-		}
-
-		//消息信息埋点
-		
-			try {
-				if(isTacks) {
-					Map<String, Object> properties=new HashMap<>();
-					properties.put("type", "PRODUCER");
-					properties.put("msgKey", msgKey.toString()); 
-					properties.put("sender", data.getClass().getName()); 
-					properties.put("exchangeName",exchange);
-					properties.put("routingKey", routeKey); 
-					properties.put("data", dataConvert); 
-					properties.put("success", "true"); 
-					properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
-					properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
-					tack.track("msginit", "mqTrack", properties);
-					tack.shutdown();
-				}
-			} catch (Exception e1) {
-				LOGGER.info("埋点msgProducer 发生异常",e1);
-			} 
-		
+		} 
 			sendToMQ(exchange, routeKey, msgKey.toString(), data);
 	}
 
