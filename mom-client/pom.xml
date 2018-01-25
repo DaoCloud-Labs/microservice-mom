@@ -8,8 +8,8 @@
 	<parent>
 		<groupId>com.yonyou.cloud</groupId>
 		<artifactId>microservice-mom</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<version>0.0.3-SNAPSHOT</version>
+		<relativePath /> 
 	</parent>
 
 	<name>mom-client</name>
@@ -56,12 +56,9 @@
 			<groupId>com.yonyou.cloud</groupId>
 			<artifactId>track</artifactId>
 		</dependency>
-	<!--增加eureka-server的依赖 -->
-	<!-- <dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-eureka</artifactId>
-			<version>1.4.2.RELEASE</version>
-		</dependency> -->
+		<!--增加eureka-server的依赖 -->
+		<!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-eureka</artifactId> 
+			<version>1.4.2.RELEASE</version> </dependency> -->
 
 		<!-- 测试依赖包 -->
 		<dependency>
@@ -114,7 +111,7 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
-			
+
 			<!-- 打包源代码插件 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

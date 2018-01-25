@@ -13,7 +13,7 @@ public class PointsListenLogin extends AbstractConsumerListener<LoginMsg>{
 	public ConsumerDao consumerDao;
 	
 	@Override
-	protected void handleMessage(LoginMsg data) {
+	public void handleMessage(LoginMsg data) {
 		long fff=consumerDao.count();
 		LOGGER.debug("监听到有人登录了，用户名："+data.getLoginName()+"，发送积分"+fff);
 	}

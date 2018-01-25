@@ -136,7 +136,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					// 设置为失败
 					LOGGER.debug("------发送消息异常，调用消息存储失败的方法------");
 					
-					msgStore.msgStoreFailed(msgKey, e.toString(), System.currentTimeMillis() - startTime, exchange,  routeKey,dataConvert,data.getClass().getName());
+					msgStore.msgStoreFailed(msgKey, e.getMessage(), System.currentTimeMillis() - startTime, exchange,  routeKey,dataConvert,data.getClass().getName());
 					//消息发送失败埋点 
 					try {
 						if(isTacks) {
@@ -158,6 +158,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 					} catch (Exception e1) {
 						LOGGER.info("埋点msgProducer 发生异常",e1);
 					}
+					throw e;
 				}
 			}
 		});

@@ -46,6 +46,6 @@ public abstract class AbstractConsumerListener<Data extends Object> implements C
 	 * 
 	 * @param data
 	 */
-	protected abstract void handleMessage(Data data);
+	public  abstract void handleMessage(Data data);
 
 }
