@@ -40,12 +40,12 @@ public class MessageRest {
 		if (type.equals("producer")) {
 			logger.info("生产者重置发送失败次数" + msgKey);
 			msgStore.resetErrorCount(msgKey);
-			mqSender.reSendOne(msgKey);
+			mqSender.reSend(msgKey);
 		} else {
 			logger.info("消费者重置消费失败次数" + msgKey);
 			consumerMsgStore.resetErrorCount(msgKey);
 			try {
-				reConsumer.reConsumerOne(msgKey);
+				reConsumer.reConsumer(msgKey);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;

@@ -211,29 +211,29 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	}
 	
 	
-	
-	@Override
-	public void reSendAllFail() {
-		List<ProducerDto> list = msgStore.selectResendList(StoreStatusEnum.PRODUCER_FAILD.getValue());
-		sendListToMQ(list);
-	} 
-	
-	@Override
-	public void reSendOne(String msgKey) {
-		List<ProducerDto> list = new ArrayList<>();
-		ProducerDto dto=msgStore.selectResendList(msgKey);
-		list.add(dto);
-		sendListToMQ(list);
+	public void reSend(String ...msgKeys) {
+		if(msgKeys.length>0) {
+			List<ProducerDto> list = new ArrayList<>();
+			for(String msgKey: msgKeys){
+				ProducerDto dto=msgStore.selectResendList(msgKey);
+				list.add(dto); 
+			}
+			sendListToMQ(list);
+		}else {
+			List<ProducerDto> list = msgStore.selectResendList(StoreStatusEnum.PRODUCER_FAILD.getValue());
+			sendListToMQ(list);
+		}
 	}
+	
+ 
 
 	public void sendListToMQ(List<ProducerDto> list) {
 		Iterator<ProducerDto> it = list.iterator();
 		while (it.hasNext()) {
 			ProducerDto msgEntity = it.next();
 			LOGGER.info(msgEntity.getMsgContent() + "消息内容");
-
 			try {
-				Class c = Class.forName(msgEntity.getBizClassName());
+				Class<?> c = Class.forName(msgEntity.getBizClassName());
 				JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
 				Object ojbClass = JSONObject.toBean(obj, c);
 

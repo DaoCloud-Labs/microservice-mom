@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,21 +39,24 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	@Autowired
 	AddressConfig address;
 	
-	@Override
-	public void reConsumerAllFail() throws  Exception {
-		List<ConsumerDto> list=msgStore.selectReConsumerList(StoreStatusEnum.CONSUMER_FAILD.getValue());
-		reConsumerExecute(list);
-
-	}
 	
 	@Override
-	public void reConsumerOne(String msgKey) throws  Exception {
-		log.info("重新消费"+msgKey);
-		ConsumerDto dto=msgStore.selectReConsumerList(msgKey);
-		List<ConsumerDto> list=new ArrayList<>();
-		list.add(dto);
-		reConsumerExecute(list);
-	}
+	public void reConsumer(String... msgKeys) throws Exception {
+		if (msgKeys.length > 0) {
+			List<ConsumerDto> list = new ArrayList<>();
+			for (String msgKey : msgKeys) {
+				log.info("重新消费" + msgKey);
+				ConsumerDto dto = msgStore.selectReConsumerList(msgKey);
+				list.add(dto);
+			}
+			reConsumerExecute(list);
+		} else {
+			List<ConsumerDto> list = msgStore.selectReConsumerList(StoreStatusEnum.CONSUMER_FAILD.getValue());
+			reConsumerExecute(list);
+		}
+	};
+	
+ 
 	
 	public void reConsumerExecute(List<ConsumerDto> list) throws Exception {
 		Iterator<ConsumerDto> it=list.iterator();

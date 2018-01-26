@@ -23,13 +23,7 @@ public interface MqSender {
 	
 	
 	/**
-	 * 重发所有失败的信息
-	 */
-	void reSendAllFail(); 
-	
-	/**
-	 * 根据key重发信息
-	 * @param msgKey
-	 */
-	void reSendOne(String msgKey); 
+	 * 重发失败的信息
+	 */ 
+	void reSend(String ...msgKey);
 }
