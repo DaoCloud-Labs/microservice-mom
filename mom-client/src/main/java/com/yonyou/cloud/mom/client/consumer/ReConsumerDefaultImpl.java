@@ -1,5 +1,6 @@
 package com.yonyou.cloud.mom.client.consumer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,10 +9,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.AmqpException;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessagePostProcessor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,9 +28,6 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	
 	@Autowired
 	private ConsumerMsgStore msgStore ;
-	
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
 	
 	@Autowired
 	Track tack;
@@ -60,7 +54,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 		reConsumerExecute(list);
 	}
 	
-	public void reConsumerExecute(List<ConsumerDto> list) {
+	public void reConsumerExecute(List<ConsumerDto> list) throws Exception {
 		Iterator<ConsumerDto> it=list.iterator();
 		 while (it.hasNext()) {
 			 ConsumerDto msgEntity = it.next();
@@ -72,17 +66,19 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	
  
     @Transactional
-    @SuppressWarnings("unchecked")
-    private void executeReConsumer( ConsumerDto msgEntity) {
+    private void executeReConsumer( ConsumerDto msgEntity) throws Exception {
 		try {
 			//创建一个类
-			 Class c =Class.forName(msgEntity.getBizClassName()); 
+			 Class<?> c =Class.forName(msgEntity.getBizClassName()); 
 			 JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
 			//把json转化成指定的对象
 			 Object ojbClass = JSONObject.toBean(obj,c);
+			
+			 Class<?> ConsumerClass =Class.forName(msgEntity.getConsumerClassName()); 
+			 Method method = ConsumerClass.getDeclaredMethod("handleMessage",c);
 			 
-			 resendRabbitQ(msgEntity.getExchange(),msgEntity.getRouterKey(),msgEntity.getMsgKey(),  ojbClass); 
- 
+			 Object consumerObject=ConsumerClass.newInstance();
+			 method.invoke(consumerObject, ojbClass);  
 			 //更新状态
 			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
 			 
@@ -132,31 +128,9 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 			} catch (Exception e1) {
 				log.info("埋点msgCustomer 发生异常");
 			}
+			
+			throw e;
 		}
     }
-    
-    
-    
-    
-	protected void resendRabbitQ( String Exchange,String routeKey, String correlation, Object data) {
-
-		rabbitTemplate.convertAndSend(routeKey, data, new MessagePostProcessor() {
-
-			@Override
-			public Message postProcessMessage(Message message) throws AmqpException {
-
-                try {
-                	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
-                    message.getMessageProperties().setContentType("json");
-                   
-                } catch (Exception e) {
-                    throw new AmqpException(e);
-                }
-              
-                return message;
-                
-            }
-        }); 
-    }
-
+ 
 }
