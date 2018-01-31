@@ -6,15 +6,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.yonyou.cloud.mom.client.config.AddressConfig;
 import com.yonyou.cloud.mom.core.dto.ConsumerDto;
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
@@ -22,7 +19,11 @@ import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
 import com.yonyou.cloud.track.Track;
 
 import net.sf.json.JSONObject;
-
+/**
+ * 
+ * @author daniell
+ *
+ */
 @Service
 public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	Logger log= LoggerFactory.getLogger(ReConsumerDefaultImpl.class);
@@ -46,7 +47,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 			List<ConsumerDto> list = new ArrayList<>();
 			for (String msgKey : msgKeys) {
 				log.info("重新消费" + msgKey);
-				ConsumerDto dto = msgStore.selectReConsumerList(msgKey);
+				ConsumerDto dto = msgStore.getReConsumerDto(msgKey);
 				list.add(dto);
 			}
 			reConsumerExecute(list);
@@ -78,10 +79,10 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 			//把json转化成指定的对象
 			 Object ojbClass = JSONObject.toBean(obj,c);
 			
-			 Class<?> ConsumerClass =Class.forName(msgEntity.getConsumerClassName()); 
-			 Method method = ConsumerClass.getDeclaredMethod("handleMessage",c);
+			 Class<?> consumerClass =Class.forName(msgEntity.getConsumerClassName()); 
+			 Method method = consumerClass.getDeclaredMethod("handleMessage",c);
 			 
-			 Object consumerObject=ConsumerClass.newInstance();
+			 Object consumerObject=consumerClass.newInstance();
 			 method.invoke(consumerObject, ojbClass);  
 			 //更新状态
 			 msgStore.updateMsgSuccess(msgEntity.getMsgKey());
@@ -99,8 +100,8 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("data", msgEntity.getMsgContent());
 					properties.put("consumerId", msgEntity.getConsumerClassName()); 
 					properties.put("success", "true"); 
-					properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
-					properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress")); 
+					properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+					properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress")); 
 					properties.put("IsRestart", "true");
 					tack.track("msgCustomer", "mqTrack", properties);
 					tack.shutdown();
@@ -122,8 +123,8 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("data", msgEntity.getMsgContent());
 					properties.put("consumerId", msgEntity.getConsumerClassName()); 
 					properties.put("success", "false"); 
-					properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
-					properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
+					properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+					properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
 					properties.put("infoMsg", e.getMessage());
 					properties.put("IsRestart", "true");
 					tack.track("msgCustomer", "mqTrack", properties);

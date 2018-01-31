@@ -32,7 +32,7 @@ public class BizService {
 		
 		LoginMsg msg = new LoginMsg();
 		msg.setLoginName(name);
-		msg.setLoginTime(new Date().getTime());
+		msg.setLoginTime(System.currentTimeMillis());
 		
 		mqSender.send("exchange-name", "queue-key", msg);
 		

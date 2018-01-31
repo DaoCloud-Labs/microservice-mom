@@ -32,20 +32,10 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		return false;
 	}
 
-	@Override
-	public boolean isProcessing(String msgKey) throws StoreDBCallbackException {
-		ConsumerEntity msg = consumerDao.findByMsgKeyAndStatus(msgKey, StoreStatusEnum.CONSUMER_PROCESS.getValue());
-		if(msg==null){
-//			consumerDao.findOne(msgKey);
-//			ConsumerEntity entity=new ConsumerEntity();
-//			entity.setMsgKey(msgKey);
-			return false;
-		}
-		return true;
-	}
+
 
 	@Override
-	public void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException {
+	public void saveMsgData(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException {
 		ConsumerEntity msg = consumerDao.findOne(msgKey);
 		if(msg==null){
 			ConsumerEntity msgnew=new ConsumerEntity();
@@ -110,16 +100,9 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		return dtolist;
 	 }
 
-	@Override
-	public Boolean resetErrorCount(String msgKey) {
-		ConsumerEntity msg = consumerDao.findOne(msgKey);
-		msg.setRetryCount(0);
-		consumerDao.save(msg);
-		return null;
-	}
 
 	@Override
-	public ConsumerDto selectReConsumerList(String msgKey) {
+	public ConsumerDto getReConsumerDto(String msgKey) {
 		ConsumerEntity entity = consumerDao.findOne(msgKey);
 		ConsumerDto dto = new ConsumerDto();
 		BeanUtils.copyProperties(entity, dto);

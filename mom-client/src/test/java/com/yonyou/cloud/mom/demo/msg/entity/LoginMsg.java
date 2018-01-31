@@ -2,16 +2,18 @@ package com.yonyou.cloud.mom.demo.msg.entity;
 
 public class LoginMsg {
 	
-	private String  LoginName;
+	private String  loginName;
 	
 	private Long loginTime;
 
+ 
+
 	public String getLoginName() {
-		return LoginName;
+		return loginName;
 	}
 
 	public void setLoginName(String loginName) {
-		LoginName = loginName;
+		this.loginName = loginName;
 	}
 
 	public Long getLoginTime() {

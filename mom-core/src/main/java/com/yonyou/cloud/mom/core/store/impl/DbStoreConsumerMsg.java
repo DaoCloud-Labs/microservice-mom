@@ -28,26 +28,20 @@ public class DbStoreConsumerMsg implements ConsumerMsgStore {
 		return callback;
 	}
 
+
 	@Override
 	public boolean exist(String msgKey) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
-		boolean isExist = callback.exist(msgKey);
-		return isExist;
-	}
-
-	@Override
-	public boolean isProcessing(String msgKey) throws StoreException {
-		ConsumerStoreDbCallback callback = getCallBack();
-		boolean isProcessing = callback.isProcessing(msgKey);
+		boolean isProcessing = callback.exist(msgKey);
 		return isProcessing;
 
 	}
 
 	@Override
-	public void updateMsgProcessing(String msgKey, String data, String exchange, String queue, String consumerClassName,
+	public void saveMsgData(String msgKey, String data, String exchange, String queue, String consumerClassName,
 			String bizClassName) throws StoreException {
 		ConsumerStoreDbCallback callback = getCallBack();
-		callback.updateMsgProcessing(msgKey, data, exchange, queue, consumerClassName, bizClassName);
+		callback.saveMsgData(msgKey, data, exchange, queue, consumerClassName, bizClassName);
 	}
 
 	@Override
@@ -70,19 +64,9 @@ public class DbStoreConsumerMsg implements ConsumerMsgStore {
 		return callback.selectReConsumerList(status);
 	}
 	@Override
-	 public ConsumerDto selectReConsumerList(String msgKey) {
+	 public ConsumerDto getReConsumerDto(String msgKey) {
 		ConsumerStoreDbCallback callback = getCallBack();
-		return callback.selectReConsumerList(msgKey);
+		return callback.getReConsumerDto(msgKey);
 	}
-	
-
-	/**
-	 * 重置消费失败的次数
-	 * 
-	 * @param msgKey
-	 */
-	public Boolean resetErrorCount(String msgKey) {
-		ConsumerStoreDbCallback callback = getCallBack();
-		return callback.resetErrorCount(msgKey);
-	}
+ 
 }

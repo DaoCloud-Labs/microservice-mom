@@ -1,14 +1,18 @@
 package com.yonyou.cloud.mom.client.producer;
 
-
+/**
+ * 
+ * @author daniell
+ *
+ */
 public interface MqSender {
 	
-	/**
-	 * 一致性发送：不会丢失消息
-	 * 
+	/** 
+	 * 一致性发送：不会丢失消息 
 	 * @param exchange
 	 * @param routeKey
 	 * @param data
+	 * @param bizCodes
 	 */
 	void send(String exchange, String routeKey, Object data, String ... bizCodes);
 	
@@ -24,6 +28,7 @@ public interface MqSender {
 	
 	/**
 	 * 重发失败的信息
-	 */ 
-	void reSend(String ...msgKey);
+	 * @param msgKey
+	 */
+	void resend(String ...msgKey);
 }

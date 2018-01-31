@@ -123,8 +123,8 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("routingKey", routeKey); 
 							properties.put("data", dataConvert); 
 							properties.put("success", "true"); 
-							properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
-							properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
+							properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
 							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
@@ -144,13 +144,13 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("type", "PRODUCER");
 							properties.put("msgKey", msgKey.toString()); 
 							properties.put("sender", data.getClass().getName()); 
-							properties.put("serviceUrl",address.ApplicationAddress());
+							properties.put("serviceUrl",address.applicationAddress());
 							properties.put("exchangeName",exchange);
 							properties.put("routingKey", routeKey); 
 							properties.put("data", dataConvert); 
 							properties.put("success", "false"); 
-							properties.put("host", address.ApplicationAndHost().get("hostIpAndPro"));
-							properties.put("serviceUrl",address.ApplicationAndHost().get("applicationAddress"));
+							properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
 							properties.put("infoMsg", e.getMessage());
 							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
@@ -210,12 +210,12 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 		});
 	}
 	
-	
-	public void reSend(String ...msgKeys) {
+	@Override
+	public void resend(String ...msgKeys) {
 		if(msgKeys.length>0) {
 			List<ProducerDto> list = new ArrayList<>();
 			for(String msgKey: msgKeys){
-				ProducerDto dto=msgStore.selectResendList(msgKey);
+				ProducerDto dto=msgStore.getResendDto(msgKey);
 				list.add(dto); 
 			}
 			sendListToMQ(list);

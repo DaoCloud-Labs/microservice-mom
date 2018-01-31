@@ -18,7 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
+/**
+ * 
+ * @author daniell
+ *
+ */
 @Component
 public class AddressConfig {
 	protected final static Logger logger = LoggerFactory.getLogger(AddressConfig.class);
@@ -26,7 +30,7 @@ public class AddressConfig {
 	@Autowired
 	private Environment env;
 
-	public String ApplicationAddress() throws UnknownHostException, MalformedObjectNameException {
+	public String applicationAddress() throws UnknownHostException, MalformedObjectNameException {
 
 		String serviceName = env.getProperty("spring.application.name");
 		String eureka = env.getProperty("eureka.client.serviceUrl.defaultZone");
@@ -70,8 +74,8 @@ public class AddressConfig {
 		return adr.toString();
 	}
 
-	public Map<String, String> ApplicationAndHost() throws UnknownHostException, MalformedObjectNameException {
-		Map<String, String> map = new HashMap<>();
+	public Map<String, String> applicationAndHost() throws UnknownHostException, MalformedObjectNameException {
+		Map<String, String> map = new HashMap<>(3);
 		String serviceName = env.getProperty("spring.application.name");
 		String eureka = env.getProperty("eureka.client.serviceUrl.defaultZone");
 

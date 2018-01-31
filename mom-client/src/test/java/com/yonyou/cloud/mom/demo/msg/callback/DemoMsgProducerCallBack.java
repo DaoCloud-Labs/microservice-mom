@@ -90,18 +90,10 @@ public class DemoMsgProducerCallBack implements ProducerStoreDBCallback {
 		}
 		return producerdtolist;
 	}
-
+ 
 	@Override
-	public Boolean resetErrorCount(String msgKey) {
-		MsgEntity msg = msgDao.findOne(msgKey);
-		msg.setRetryCount(0);
-		msgDao.save(msg);
-		return true;
-	}
-
-	@Override
-	public ProducerDto selectResendList(String Msgkey) {
-		MsgEntity producer=msgDao.findOne(Msgkey);
+	public ProducerDto getResendProducerDto(String msgkey) {
+		MsgEntity producer=msgDao.findOne(msgkey);
 		ProducerDto dto=new ProducerDto();
 		BeanUtils.copyProperties(producer, dto);
 		return 	dto;

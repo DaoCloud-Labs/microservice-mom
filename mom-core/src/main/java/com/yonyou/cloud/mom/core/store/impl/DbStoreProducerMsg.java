@@ -138,17 +138,10 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
     }
     
     @Override
-    public ProducerDto selectResendList(String msgkey){
+    public ProducerDto getResendDto(String msgkey){
     	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
-    	return producerStoreDBCallback.selectResendList(msgkey);
+    	return producerStoreDBCallback.getResendProducerDto(msgkey);
     }
     
-    /**
-     * 重置发送失败的次数
-     * @param msgKey
-     */
-    public Boolean resetErrorCount(String msgKey) {
-    	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
-    	return producerStoreDBCallback.resetErrorCount(msgKey);
-    }
+ 
 }
