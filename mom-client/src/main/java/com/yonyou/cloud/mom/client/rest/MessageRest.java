@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.client.consumer.ReConsumerDefault;
 import com.yonyou.cloud.mom.client.producer.MqSender;
 /**
@@ -35,7 +34,6 @@ public class MessageRest {
 	@RequestMapping("/reset/{type}/{msgKey}")
 	public boolean reset(@PathVariable("msgKey") String msgKey, @PathVariable("type") String type) {
 		if ("producer".equals(type)) {
-			logger.info("生产者重置发送失败次数" + msgKey);
 			mqSender.resend(msgKey);
 		} else {
 			try {
