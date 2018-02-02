@@ -29,3 +29,27 @@ Spring:4.0+
 [springboot使用说明](https://github.com/yonyou-auto-dev/microservice-mom/blob/dev/springbootdemo.md)
 
 [springmvc使用说明](https://github.com/yonyou-auto-dev/microservice-mom/blob/dev/Springmvc.md)
+
+
+
+
+## 版本说明
+```
+mom-cli 0.03版本说明
+	1.新增了重新发送接口
+	   1.1支持通过http请求单条重新发送
+	   1.2支持定时器自动扫描需要重发的信息
+	2.新增了重新消费接口
+	   1.1支持通过http请求单条重新发送
+	   1.2支持定时器自动扫描需要消费的信息
+	3.修改了发送者存储DB的回调接口 ProducerStoreDBCallback
+		3.1修改查询多条重新发送 的方法名
+		3.2 新增根据msgKey 查询单条重发消息的方法
+	4.修改了消费者存储DB的回调接口  StoreDBCallbackException
+		4.1 exist() 根据msgkey判断消息是否存在{true：存在,false:不存在}
+		4.2 saveMsgData()保存接受到的信息
+		4.3 新增更加msgKey 查询单条需要重新消费的信息
+	5.优化了重新消费的逻辑
+		目前重新消费通过Java反射方式实现
+	6.优化了埋点相关属性
+```
