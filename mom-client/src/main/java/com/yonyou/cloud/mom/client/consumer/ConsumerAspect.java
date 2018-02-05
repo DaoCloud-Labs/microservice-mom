@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.rabbitmq.client.Channel;
+import com.yonyou.cloud.mom.client.config.AddressConfig;
 import com.yonyou.cloud.mom.core.store.ConsumerMsgStore;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
 import com.yonyou.cloud.mom.core.store.callback.exception.StoreException;
@@ -44,6 +45,9 @@ public class ConsumerAspect {
 	@Value("${track.isTacks:false}")
 	private Boolean isTacks; 
 	
+	@Autowired
+	AddressConfig address;
+	
     private ConsumerMsgStore dbStoreConsumerMsg  = new DbStoreConsumerMsg();
     
     
@@ -54,27 +58,28 @@ public class ConsumerAspect {
 
     @Around("@annotation(com.yonyou.cloud.mom.client.consumer.MomConsumer)")
     public Object aroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
-    	
-    	Object[] args = pjp.getArgs();// 参数pjp.getArgs()
+    	// 参数pjp.getArgs()
+    	Object[] args = pjp.getArgs();
     	
     	Message message = (Message)args[0];
     	
     	Channel channel = (Channel)args[1];
 
-        boolean isProcessing = false;
+        boolean exist = false;
 
         Object object = null;
-
-        Long startTime = System.currentTimeMillis(); //开始时间
+        //开始时间
+        Long startTime = System.currentTimeMillis(); 
         
         try {
 
             String msgKey = new String ( message.getMessageProperties().getCorrelationId());
             try {
                 object = messageConverter.fromMessage(message);
-                // 是否在处理中
+                // 是否存在
                 LOGGER.debug("msg data  ==== " +object);
-                isProcessing = dbStoreConsumerMsg.isProcessing(msgKey);//false 没有在处理中，true已经在出来中了
+              //false 没有存在，true 已经存在
+                exist = dbStoreConsumerMsg.exist(msgKey);
 
             } catch (MessageConversionException e) {
 
@@ -82,7 +87,7 @@ public class ConsumerAspect {
             }
 
             if (object != null) {
-                if (!isProcessing) {
+                if (!exist) {
                 	
                 	ObjectMapper mapper = new ObjectMapper();
                 	String dataConvert = mapper.writeValueAsString(object);
@@ -91,7 +96,7 @@ public class ConsumerAspect {
              		String consumerClassName=pjp.getTarget().getClass().getName();
              		
                     // setting to processing
-                	dbStoreConsumerMsg.updateMsgProcessing(msgKey, dataConvert,message.getMessageProperties().getReceivedExchange(),message.getMessageProperties().getConsumerQueue(),consumerClassName,bizclassName);
+                	dbStoreConsumerMsg.saveMsgData(msgKey, dataConvert,message.getMessageProperties().getReceivedExchange(),message.getMessageProperties().getConsumerQueue(),consumerClassName,bizclassName);
 
                     // 执行
                     Object rtnOb;
@@ -114,7 +119,8 @@ public class ConsumerAspect {
 							properties.put("data", dataConvert);
 							properties.put("consumerId", consumerClassName); 
 							properties.put("success", "true"); 
-							properties.put("host", "localhost"); 
+							properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
 							tack.track("msgCustomer", "msgCustomer", properties);
 							tack.shutdown();
                     		}
@@ -141,7 +147,8 @@ public class ConsumerAspect {
 								properties.put("data", dataConvert);
 								properties.put("consumerId", consumerClassName); 
 								properties.put("success", "false"); 
-								properties.put("host", "localhost"); 
+								properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+								properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
 								properties.put("infoMsg", t.getMessage());
 								tack.track("msgCustomer", "msgCustomer", properties);
 								tack.shutdown();

@@ -136,4 +136,12 @@ public class DbStoreProducerMsg implements ProducerMsgStore {
     	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
     	return producerStoreDBCallback.selectResendList(status);
     }
+    
+    @Override
+    public ProducerDto getResendDto(String msgkey){
+    	ProducerStoreDBCallback producerStoreDBCallback = getCallBack();
+    	return producerStoreDBCallback.getResendProducerDto(msgkey);
+    }
+    
+ 
 }

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yonyou.cloud.mom.client.MqSender;
+import com.yonyou.cloud.mom.client.producer.MqSender;
 import com.yonyou.cloud.mom.demo.dao.BizDao;
 import com.yonyou.cloud.mom.demo.msg.entity.BizEntity;
 import com.yonyou.cloud.mom.demo.msg.entity.LoginMsg;
@@ -32,7 +32,7 @@ public class BizService {
 		
 		LoginMsg msg = new LoginMsg();
 		msg.setLoginName(name);
-		msg.setLoginTime(new Date().getTime());
+		msg.setLoginTime(System.currentTimeMillis());
 		
 		mqSender.send("exchange-name", "queue-key", msg);
 		

@@ -10,6 +10,7 @@ public class ConsumerDto {
 	private Integer retryCount;
 	private String consumerClassName;//消费者类名
 	private String bizClassName;
+	private String exchange;
 	
 	public String getMsgKey() {
 		return msgKey;
@@ -73,6 +74,14 @@ public class ConsumerDto {
 
 	public void setRouterKey(String routerKey) {
 		this.routerKey = routerKey;
+	}
+
+	public String getExchange() {
+		return exchange;
+	}
+
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
 	}
 
 
