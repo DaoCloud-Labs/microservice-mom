@@ -115,7 +115,7 @@ public class ConsumerAspect {
 							properties.put("msgKey", msgKey); 
 							properties.put("sender", bizclassName); 
 							properties.put("exchangeName",message.getMessageProperties().getReceivedExchange());
-							properties.put("routingKey", message.getMessageProperties().getConsumerQueue()); 
+							properties.put("routingKey", message.getMessageProperties().getConsumerQueue()!=null? message.getMessageProperties().getConsumerQueue():""); 
 							properties.put("data", dataConvert);
 							properties.put("consumerId", consumerClassName); 
 							properties.put("success", "true"); 
@@ -143,7 +143,7 @@ public class ConsumerAspect {
 								properties.put("msgKey", msgKey); 
 								properties.put("sender", bizclassName); 
 								properties.put("exchangeName",message.getMessageProperties().getReceivedExchange());
-								properties.put("routingKey", message.getMessageProperties().getConsumerQueue()); 
+								properties.put("routingKey", message.getMessageProperties().getConsumerQueue()!=null? message.getMessageProperties().getConsumerQueue():""); 
 								properties.put("data", dataConvert);
 								properties.put("consumerId", consumerClassName); 
 								properties.put("success", "false"); 

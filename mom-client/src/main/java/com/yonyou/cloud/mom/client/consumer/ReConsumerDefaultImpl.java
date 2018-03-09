@@ -96,7 +96,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("msgKey", msgEntity.getMsgKey()); 
 					properties.put("sender", msgEntity.getBizClassName()); 
 					properties.put("exchangeName","");
-					properties.put("routingKey", msgEntity.getRouterKey()); 
+					properties.put("routingKey", msgEntity.getRouterKey()!=null? msgEntity.getRouterKey():""); 
 					properties.put("data", msgEntity.getMsgContent());
 					properties.put("consumerId", msgEntity.getConsumerClassName()); 
 					properties.put("success", "true"); 
@@ -119,7 +119,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("msgKey", msgEntity.getMsgKey()); 
 					properties.put("sender", msgEntity.getBizClassName()); 
 					properties.put("exchangeName","");
-					properties.put("routingKey", msgEntity.getRouterKey()); 
+					properties.put("routingKey", msgEntity.getRouterKey()!=null? msgEntity.getRouterKey():""); 
 					properties.put("data", msgEntity.getMsgContent());
 					properties.put("consumerId", msgEntity.getConsumerClassName()); 
 					properties.put("success", "false"); 

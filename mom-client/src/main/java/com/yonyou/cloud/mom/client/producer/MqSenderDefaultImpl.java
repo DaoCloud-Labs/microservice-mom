@@ -119,8 +119,8 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("type", "PRODUCER");
 							properties.put("msgKey", msgKey); 
 							properties.put("sender", data.getClass().getName()); 
-							properties.put("exchangeName",exchange);
-							properties.put("routingKey", routeKey); 
+							properties.put("exchangeName",exchange); 
+							properties.put("routingKey", routeKey!=null?routeKey:""); 
 							properties.put("data", dataConvert); 
 							properties.put("success", "true"); 
 							properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
@@ -146,8 +146,8 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("sender", data.getClass().getName()); 
 							properties.put("serviceUrl",address.applicationAddress());
 							properties.put("exchangeName",exchange);
-							properties.put("routingKey", routeKey); 
-							properties.put("data", dataConvert); 
+							properties.put("routingKey", routeKey!=null?routeKey:"");
+							properties.put("data", dataConvert);
 							properties.put("success", "false"); 
 							properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
 							properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
