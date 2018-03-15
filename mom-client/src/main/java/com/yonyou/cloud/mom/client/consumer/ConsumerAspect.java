@@ -163,7 +163,7 @@ public class ConsumerAspect {
 
                     return rtnOb;
                 } else {
-
+                	 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     LOGGER.info("is processing, ignore: " + object.toString());
                 }
             }
