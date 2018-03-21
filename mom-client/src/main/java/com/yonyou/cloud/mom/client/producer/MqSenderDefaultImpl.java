@@ -129,7 +129,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							tack.shutdown();
 						}
 					} catch (Exception e1) {
-						LOGGER.info("埋点msgProducer 发生异常",e1);
+						LOGGER.error("埋点msgProducer 发生异常",e1);
 					}
 					
 				} catch (Exception e) {
@@ -156,7 +156,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							tack.shutdown();
 						}
 					} catch (Exception e1) {
-						LOGGER.info("埋点msgProducer 发生异常",e1);
+						LOGGER.error("埋点msgProducer 发生异常",e1);
 					}
 					throw e;
 				}

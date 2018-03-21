@@ -63,7 +63,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 		Iterator<ConsumerDto> it=list.iterator();
 		 while (it.hasNext()) {
 			 ConsumerDto msgEntity = it.next();
-			 log.info(msgEntity.getMsgContent()+"消息内容");			
+			 log.info(msgEntity.toString()+"消息内容");			
 			 executeReConsumer(msgEntity);
 		}
 	}
@@ -95,7 +95,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("type", "CONSUMER");
 					properties.put("msgKey", msgEntity.getMsgKey()); 
 					properties.put("sender", msgEntity.getBizClassName()); 
-					properties.put("exchangeName","");
+					properties.put("exchangeName",null);
 					properties.put("routingKey", msgEntity.getRouterKey()!=null? msgEntity.getRouterKey():""); 
 					properties.put("data", msgEntity.getMsgContent());
 					properties.put("consumerId", msgEntity.getConsumerClassName()); 
@@ -107,7 +107,7 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					tack.shutdown();
          		}
 				} catch (Exception e1) {
-					log.info("埋点msgCustomer 发生异常");
+					log.error("埋点msgCustomer 发生异常",e1);
 				}
          	
 		} catch (Exception e) {
@@ -125,13 +125,13 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 					properties.put("success", "false"); 
 					properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
 					properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
-					properties.put("infoMsg", e.getMessage());
+					properties.put("infoMsg", e.getMessage()!=null?e.getMessage():"");
 					properties.put("IsRestart", "true");
 					tack.track("msgCustomer", "mqTrack", properties);
 					tack.shutdown();
 				}
 			} catch (Exception e1) {
-				log.info("埋点msgCustomer 发生异常");
+				log.error("埋点msgCustomer 发生异常",e1);
 			}
 			
 			throw e;
