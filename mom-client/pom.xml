@@ -24,7 +24,6 @@
 		<dependency>
 			<groupId>com.yonyou.cloud</groupId>
 			<artifactId>mom-core</artifactId>
-			<version>0.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
