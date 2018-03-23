@@ -125,7 +125,7 @@ public class ConsumerAspect {
 							tack.shutdown();
                     		}
 						} catch (Exception e1) {
-							LOGGER.info("埋点msgCustomer 发生异常");
+							LOGGER.error("埋点msgCustomer 发生异常",e1);
 						}
     					
                         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -154,7 +154,7 @@ public class ConsumerAspect {
 								tack.shutdown();
 							}
 						} catch (Exception e1) {
-							LOGGER.info("埋点msgCustomer 发生异常");
+							LOGGER.error("埋点msgCustomer 发生异常",e1);
 						}
     					
                         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -163,7 +163,7 @@ public class ConsumerAspect {
 
                     return rtnOb;
                 } else {
-
+                	 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     LOGGER.info("is processing, ignore: " + object.toString());
                 }
             }
