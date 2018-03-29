@@ -25,10 +25,11 @@ public abstract class AbstractConsumerListener<Data extends Object> implements C
 
 	/**
 	 * 接收到消息 进行处理
+	 * @throws Exception 
 	 */
 	@Override
 	@MomConsumer
-	public void onMessage(Message message, Channel channel) {
+	public void onMessage (Message message, Channel channel) throws Exception {
 		try {
 
 			Object object = messageConverter.fromMessage(message);
@@ -46,6 +47,6 @@ public abstract class AbstractConsumerListener<Data extends Object> implements C
 	 * 
 	 * @param data
 	 */
-	public  abstract void handleMessage(Data data);
+	public  abstract void handleMessage(Data data)  throws Exception;
 
 }
