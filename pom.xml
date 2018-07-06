@@ -127,16 +127,22 @@
 	</dependencyManagement>
 
 	<distributionManagement>
-		<!-- --> <repository>
+		<!--  <repository>
 			<id>nexus-releases</id>
 			<name>Releases name</name>
 			<url>http://210.13.111.26:10160/nexus/content/repositories/releases/</url>
-		</repository>
+		</repository>-->
 		<snapshotRepository>
 			<id>nexus-snapshots</id>
 			<name>snapshots name</name>
-			<url>http://210.13.111.26:10160/nexus/content/repositories/snapshots/</url>
+			<url>http://10.180.8.200:32000/repository/maven-snapshots/</url>
 		</snapshotRepository>
+		
+		<!-- <snapshotRepository>
+	        <id>nexus</id>  
+        		<name>internal nexus repository</name>  
+        		<url>http://dev-pv.saicmotor.com:9090/nexus/content/repositories/snapshots/</url>  
+	    </snapshotRepository> -->
 		
 		<!-- 
 		 <snapshotRepository>
