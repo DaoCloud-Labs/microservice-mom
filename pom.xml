@@ -32,7 +32,7 @@
 	<name>microservice-mom</name>
 	<url>http://maven.apache.org</url>
 
-	<modules>
+    <modules>
 		<module>mom-client</module>
 		<module>mom-core</module>
 	</modules>
