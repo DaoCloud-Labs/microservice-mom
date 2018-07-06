@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>com.yonyou.cloud</groupId>
 		<artifactId>microservice-mom</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>0.0.4-SNAPSHOT</version>
 		<relativePath /> 
 	</parent>
 
