@@ -135,7 +135,7 @@
 		<snapshotRepository>
 			<id>nexus-snapshots</id>
 			<name>snapshots name</name>
-			<url>http://10.180.8.200:32000/repository/maven-snapshots/</url>
+			<url>http://10.180.8.208:32000/repository/maven-snapshots/</url>
 		</snapshotRepository>
 		
 		<!-- <snapshotRepository>
