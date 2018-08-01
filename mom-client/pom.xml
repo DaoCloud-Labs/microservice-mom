@@ -18,12 +18,14 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		 <mom-core.version>0.0.4-SNAPSHOT</mom-core.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.yonyou.cloud</groupId>
 			<artifactId>mom-core</artifactId>
+			<version>${mom-core.version}</version>
 		</dependency>
 
 		<dependency>
