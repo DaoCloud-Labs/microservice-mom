@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.yonyou.cloud.mom.client.consumer.ReConsumerDefault;
 import com.yonyou.cloud.mom.client.producer.MqSender;
@@ -31,13 +32,34 @@ public class MessageRest {
 	 *            {producer 生产者；consumer 消费者}
 	 * @return
 	 */
-	@RequestMapping("/reset/{type}/{msgKey}")
+	@RequestMapping(value="/reset/{type}/{msgKey}", method = RequestMethod.POST)
 	public boolean reset(@PathVariable("msgKey") String msgKey, @PathVariable("type") String type) {
 		if ("producer".equals(type)) {
 			mqSender.resend(msgKey);
 		} else {
 			try {
 				reConsumer.reConsumer(msgKey);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	/**
+	 * 全部重發接口 producer/或者重新消費
+	 * @param type
+	 * @return
+	 */
+	@RequestMapping(value="/reset/{type}/all", method = RequestMethod.POST)
+	public boolean reset(@PathVariable("type") String type) {
+		if ("producer".equals(type)) {
+			mqSender.resend();
+		} else {
+			try {
+				reConsumer.reConsumer();
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
