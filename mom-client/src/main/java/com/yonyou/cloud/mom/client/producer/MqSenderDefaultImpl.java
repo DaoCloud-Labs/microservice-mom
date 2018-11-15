@@ -52,9 +52,21 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 	private ProducerMsgStore msgStore ; 
 	
 	
-	@Autowired
-	Track tack; 
 	
+	private Track tack; 
+	
+	
+	
+	public Track getTack() {
+		return tack;
+	}
+
+	public void setTack(Track tack) {
+		this.tack = tack;
+	}
+
+
+
 	@Value("${track.isTacks:false}")
 	private Boolean isTacks;  
 	
@@ -174,7 +186,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
                 try {
 //                    message.getMessageProperties().setCorrelationIdString(correlation);
-                	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
+                	 message.getMessageProperties().setCorrelationId(correlation);
                     message.getMessageProperties().setContentType("json");
                    
                 } catch (Exception e) {

@@ -31,8 +31,15 @@ public class ReConsumerDefaultImpl  implements ReConsumerDefault {
 	@Autowired
 	private ConsumerMsgStore msgStore ;
 	
-	@Autowired
-	Track tack;
+	private Track tack; 
+	
+	public Track getTack() {
+		return tack;
+	}
+
+	public void setTack(Track tack) {
+		this.tack = tack;
+	}
 	
 	@Value("${track.isTacks:false}")
 	private Boolean isTacks; 

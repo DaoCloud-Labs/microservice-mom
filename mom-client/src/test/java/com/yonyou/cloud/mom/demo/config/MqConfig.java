@@ -9,7 +9,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitOperations;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.support.converter.JsonMessageConverter;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -78,7 +78,7 @@ public class MqConfig {
 
 	@Bean
 	public MessageConverter messageConverter() {
-		JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
+		Jackson2JsonMessageConverter jsonMessageConverter = new Jackson2JsonMessageConverter();
 		return jsonMessageConverter;
 	}
  
