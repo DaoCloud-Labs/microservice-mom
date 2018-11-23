@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,20 +32,10 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		return false;
 	}
 
-	@Override
-	public boolean isProcessing(String msgKey) throws StoreDBCallbackException {
-		ConsumerEntity msg = consumerDao.findByMsgKeyAndStatus(msgKey, StoreStatusEnum.CONSUMER_PROCESS.getValue());
-		if(msg==null){
-//			consumerDao.findOne(msgKey);
-//			ConsumerEntity entity=new ConsumerEntity();
-//			entity.setMsgKey(msgKey);
-			return false;
-		}
-		return true;
-	}
+
 
 	@Override
-	public void updateMsgProcessing(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException {
+	public void saveMsgData(String msgKey,String data,String exchange,String routerKey,String consumerClassName,String bizClassName) throws StoreDBCallbackException {
 		ConsumerEntity msg = consumerDao.findOne(msgKey);
 		if(msg==null){
 			ConsumerEntity msgnew=new ConsumerEntity();
@@ -108,6 +99,15 @@ public class DemoMsgConsumerCallBack implements ConsumerStoreDbCallback{
 		}
 		return dtolist;
 	 }
+
+
+	@Override
+	public ConsumerDto getReConsumerDto(String msgKey) {
+		ConsumerEntity entity = consumerDao.findOne(msgKey);
+		ConsumerDto dto = new ConsumerDto();
+		BeanUtils.copyProperties(entity, dto);
+		return dto;
+	}
 	
 
 }

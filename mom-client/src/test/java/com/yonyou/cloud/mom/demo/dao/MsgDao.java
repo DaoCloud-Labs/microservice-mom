@@ -17,6 +17,11 @@ public interface MsgDao extends JpaRepository<MsgEntity, String>{
 
 	@Query("select m from MsgEntity m where m.status=?1")
 	public List<MsgEntity> findbystatus(Integer status); 
+	
+	@Query("select m from MsgEntity m where m.msg_key=?1")
+	public MsgEntity findOne(String msgKey); 
+	
+	
  
 }
 

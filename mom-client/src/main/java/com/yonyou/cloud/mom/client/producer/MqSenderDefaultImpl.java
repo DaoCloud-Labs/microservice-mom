@@ -1,6 +1,7 @@
-package com.yonyou.cloud.mom.client.impl;
+package com.yonyou.cloud.mom.client.producer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,8 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.yonyou.cloud.mom.client.MqSender;
+import com.yonyou.cloud.mom.client.config.AddressConfig;
 import com.yonyou.cloud.mom.core.dto.ProducerDto;
 import com.yonyou.cloud.mom.core.store.ProducerMsgStore;
 import com.yonyou.cloud.mom.core.store.StoreStatusEnum;
@@ -28,7 +28,6 @@ import com.yonyou.cloud.mom.core.transaction.executor.AfterCommitExecutorDefault
 import com.yonyou.cloud.mom.core.transaction.executor.PreCommitExecutorDefaultImpl;
 import com.yonyou.cloud.mom.core.transaction.executor.TransactionExecutor;
 import com.yonyou.cloud.track.Track;
-
 import net.sf.json.JSONObject;
 
 /**
@@ -38,7 +37,7 @@ import net.sf.json.JSONObject;
  *
  */
 @Service
-public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSender {
+public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSender{
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(MqSenderDefaultImpl.class);
 
@@ -50,15 +49,30 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 	// msg Db Store的实现
 	@Autowired
-	private ProducerMsgStore msgStore ;//= new DbStoreProducerMsg();
+	private ProducerMsgStore msgStore ; 
 	
+	
+	
+	private Track tack; 
+	
+	
+	
+	public Track getTack() {
+		return tack;
+	}
+
+	public void setTack(Track tack) {
+		this.tack = tack;
+	}
+
+
+
+	@Value("${track.isTacks:false}")
+	private Boolean isTacks;  
 	
 	@Autowired
-	Track tack; 
+	AddressConfig address;
 	
-	@Value("${track.isTacks:false}")
-	private Boolean isTacks; 
-
 	@Override
 	@Transactional
 	public void send(String exchange, String routeKey, Object data, String ...bizCodes) {
@@ -80,28 +94,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
 		} catch (IOException e) {
 			throw new AmqpException(e);
-		}
-
-		//消息信息埋点
-		
-			try {
-				if(isTacks) {
-					Map<String, Object> properties=new HashMap<>();
-					properties.put("type", "PRODUCER");
-					properties.put("msgKey", msgKey); 
-					properties.put("sender", data.getClass().getName()); 
-					properties.put("exchangeName",exchange);
-					properties.put("routingKey", routeKey); 
-					properties.put("data", dataConvert); 
-					properties.put("success", "true"); 
-					properties.put("host", "localhost"); 
-					tack.track("msginit", "mqTrack", properties);
-					tack.shutdown();
-				}
-			} catch (Exception e1) {
-				LOGGER.info("埋点msgProducer 发生异常",e1);
-			} 
-		
+		} 
 			sendToMQ(exchange, routeKey, msgKey.toString(), data);
 	}
 
@@ -138,41 +131,46 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 							properties.put("type", "PRODUCER");
 							properties.put("msgKey", msgKey); 
 							properties.put("sender", data.getClass().getName()); 
-							properties.put("exchangeName",exchange);
-							properties.put("routingKey", routeKey); 
+							properties.put("exchangeName",exchange); 
+							properties.put("routingKey", routeKey!=null?routeKey:""); 
 							properties.put("data", dataConvert); 
 							properties.put("success", "true"); 
-							properties.put("host", "localhost"); 
+							properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
 							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
 					} catch (Exception e1) {
-						LOGGER.info("埋点msgProducer 发生异常",e1);
+						LOGGER.error("埋点msgProducer 发生异常",e1);
 					}
 					
 				} catch (Exception e) {
 					// 设置为失败
 					LOGGER.debug("------发送消息异常，调用消息存储失败的方法------");
 					
-					msgStore.msgStoreFailed(msgKey, e.toString(), System.currentTimeMillis() - startTime, exchange,  routeKey,dataConvert,data.getClass().getName());
+					msgStore.msgStoreFailed(msgKey, e.getMessage(), System.currentTimeMillis() - startTime, exchange,  routeKey,dataConvert,data.getClass().getName());
 					//消息发送失败埋点 
 					try {
 						if(isTacks) {
 							Map<String, Object> properties=new HashMap<>();
 							properties.put("type", "PRODUCER");
-							properties.put("msgKey", msgKey); 
+							properties.put("msgKey", msgKey.toString()); 
 							properties.put("sender", data.getClass().getName()); 
+							properties.put("serviceUrl",address.applicationAddress());
 							properties.put("exchangeName",exchange);
-							properties.put("routingKey", routeKey); 
-							properties.put("data", dataConvert); 
+							properties.put("routingKey", routeKey!=null?routeKey:"");
+							properties.put("data", dataConvert);
 							properties.put("success", "false"); 
-							properties.put("host", "localhost"); 
+							properties.put("host", address.applicationAndHost().get("hostIpAndPro"));
+							properties.put("serviceUrl",address.applicationAndHost().get("applicationAddress"));
+							properties.put("infoMsg", e.getMessage());
 							tack.track("msgProducer", "mqTrack", properties);
 							tack.shutdown();
 						}
 					} catch (Exception e1) {
-						LOGGER.info("埋点msgProducer 发生异常",e1);
+						LOGGER.error("埋点msgProducer 发生异常",e1);
 					}
+					throw e;
 				}
 			}
 		});
@@ -188,8 +186,7 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 
                 try {
 //                    message.getMessageProperties().setCorrelationIdString(correlation);
-                	
-                	 message.getMessageProperties().setCorrelationId(correlation.getBytes());
+                	 message.getMessageProperties().setCorrelationId(correlation);
                     message.getMessageProperties().setContentType("json");
                    
                 } catch (Exception e) {
@@ -225,27 +222,37 @@ public class MqSenderDefaultImpl extends RabbitGatewaySupport implements MqSende
 		});
 	}
 	
-	
-	
 	@Override
-	public void resend(){
-		List<ProducerDto> list=msgStore.selectResendList(StoreStatusEnum.PRODUCER_FAILD.getValue());
-		Iterator<ProducerDto> it=list.iterator();
-		 while (it.hasNext()) {
-			 ProducerDto msgEntity = it.next();
-			 LOGGER.info(msgEntity.getMsgContent()+"消息内容");
-			
-			 
+	public void resend(String ...msgKeys) {
+		if(msgKeys.length>0) {
+			List<ProducerDto> list = new ArrayList<>();
+			for(String msgKey: msgKeys){
+				ProducerDto dto=msgStore.getResendDto(msgKey);
+				list.add(dto); 
+			}
+			sendListToMQ(list);
+		}else {
+			List<ProducerDto> list = msgStore.selectResendList(StoreStatusEnum.PRODUCER_FAILD.getValue());
+			sendListToMQ(list);
+		}
+	}
+	
+ 
+
+	public void sendListToMQ(List<ProducerDto> list) {
+		Iterator<ProducerDto> it = list.iterator();
+		while (it.hasNext()) {
+			ProducerDto msgEntity = it.next();
+			LOGGER.info(msgEntity.getMsgContent() + "消息内容");
 			try {
-				 Class c =Class.forName(msgEntity.getBizClassName()); 
-				 JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
-				 Object ojbClass = JSONObject.toBean(obj,c);
-				 
-				 sendToMQ(msgEntity.getExchange(), msgEntity.getRouterKey(), msgEntity.getMsgKey(), ojbClass);
+				Class<?> c = Class.forName(msgEntity.getBizClassName());
+				JSONObject obj = JSONObject.fromObject(msgEntity.getMsgContent());
+				Object ojbClass = JSONObject.toBean(obj, c);
+
+				sendToMQ(msgEntity.getExchange(), msgEntity.getRouterKey(), msgEntity.getMsgKey(), ojbClass);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
 }

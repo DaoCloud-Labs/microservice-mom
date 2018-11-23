@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>com.yonyou.cloud</groupId>
 		<artifactId>microservice-mom</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.4-SNAPSHOT</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -99,5 +99,20 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<name>Releases name</name>
+			<url>http://10.180.6.194:8081/nexus/content/repositories/releases/</url>
+		</repository>
+	    
+	    <snapshotRepository>
+	        <id>nexus-snapshots</id>
+	        <name>user snapshot</name>
+	        <url>http://10.180.6.194:8081/nexus/content/repositories/snapshots/</url>
+	    </snapshotRepository>
+	</distributionManagement>
 
 </project>

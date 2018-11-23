@@ -1,4 +1,3 @@
-
 ### 生产者用法
 
 1.config
@@ -7,7 +6,7 @@
 	<dependency>
 		<groupId>com.yonyou.cloud</groupId>
 		<artifactId>mom-client</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.3-SNAPSHOT</version>
     	</dependency>
 ```
 
@@ -52,12 +51,29 @@ public class MqConfig {
 2.实现回调
 
 ``` 				  
+ package org.ben.mom.producer.msg.callback.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.ben.mom.producer.entity.ProducerMsg;
+import org.ben.mom.producer.service.MsgService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import com.yonyou.cloud.mom.core.dto.ProducerDto;
+import com.yonyou.cloud.mom.core.store.callback.ProducerStoreDBCallback;
+import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
+
 @Component
 public class ProducerCallbackImpl implements ProducerStoreDBCallback{
 	
 	@Autowired
 	MsgService msgService;
 
+	/**
+	 * 保存消息
+	 */
 	@Override
 	public void saveMsgData(String msgKey, String data, String exchange, String routerKey, String bizClassName)
 			throws StoreDBCallbackException {
@@ -73,6 +89,9 @@ public class ProducerCallbackImpl implements ProducerStoreDBCallback{
 		
 	}
 
+	/**
+	 * 发送成功后相关处理
+	 */
 	@Override
 	public void update2success(String msgKey) throws StoreDBCallbackException {
 		ProducerMsg msg = new ProducerMsg();
@@ -81,15 +100,23 @@ public class ProducerCallbackImpl implements ProducerStoreDBCallback{
 		msgService.updateSelectiveById(msg);
 	}
 
+	/**
+	 * 发送成功后相关处理
+	 */
 	@Override
 	public void update2faild(String msgKey, String infoMsg, Long costTime, String exchange, String routerKey,
 			String data, String bizClassName) throws StoreDBCallbackException {
 		ProducerMsg msg = new ProducerMsg();
 		msg.setMsgKey(msgKey);
 		msg.setStatus(2);
+		msg.setInfoMsg(infoMsg);
+		msg.setRouterKey(routerKey);
 		msgService.updateSelectiveById(msg);		
 	}
 
+	/**
+	 * 查询需要重发的消息
+	 */
 	@Override
 	public List<ProducerDto> selectResendList(Integer status) {
 		ProducerMsg msg = new ProducerMsg();
@@ -109,8 +136,22 @@ public class ProducerCallbackImpl implements ProducerStoreDBCallback{
 		
 		return returnList;
 	}
-}
 
+	/**
+	 * 根据msgKey查询单条需要重发的消息
+	 */
+	@Override
+	public ProducerDto getResendProducerDto(String Msgkey) { 
+			ProducerMsg msg = msgService.selectById(Msgkey); 
+			 ProducerDto dto=new ProducerDto();
+			 BeanUtils.copyProperties( msg,dto);
+			return dto;
+		 
+	}
+
+	
+
+}
 
 ``` 
 
@@ -145,7 +186,7 @@ public class ProducerCallbackImpl implements ProducerStoreDBCallback{
 	<dependency>
 		<groupId>com.yonyou.cloud</groupId>
 		<artifactId>mom-client</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.3-SNAPSHOT</version>
     	</dependency>
 ```
 
@@ -226,23 +267,35 @@ public class MqConfig {
 2.实现回调
 
 ```
+package org.ben.mom.consumer.msg.callback.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.ben.mom.consumer.entity.ConsumerMsg;
+import org.ben.mom.consumer.mapper.ConsumerMsgMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.yonyou.cloud.mom.core.dto.ConsumerDto;
+import com.yonyou.cloud.mom.core.store.callback.ConsumerStoreDbCallback;
+import com.yonyou.cloud.mom.core.store.callback.exception.StoreDBCallbackException;
+
 @Component
+@Transactional
 public class ConsumerCallbackImpl implements ConsumerStoreDbCallback{
 
 	@Autowired
 	ConsumerMsgMapper consumerMsgMapper;
 	
+	 /**
+	  * 根据msgkey判断消息是否存在{true：存在,false:不存在}
+	  */
 	@Override
 	public boolean exist(String msgKey) throws StoreDBCallbackException {
-		if(consumerMsgMapper.selectByPrimaryKey(msgKey)!=null) {
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
-	public boolean isProcessing(String msgKey) throws StoreDBCallbackException {
 		ConsumerMsg msg = new ConsumerMsg();
 		msg.setMsgKey(msgKey);
 		msg.setStatus(103);
@@ -252,9 +305,11 @@ public class ConsumerCallbackImpl implements ConsumerStoreDbCallback{
 	
 		return false;
 	}
-
+	/**
+	 * 保存接受到的信息
+	 */
 	@Override
-	public void updateMsgProcessing(String msgKey, String data, String exchange, String routerKey,
+	public void saveMsgData(String msgKey, String data, String exchange, String routerKey,
 			String consumerClassName, String bizClassName) throws StoreDBCallbackException {
 		ConsumerMsg msg = new ConsumerMsg();
 		msg.setMsgKey(msgKey);
@@ -275,6 +330,9 @@ public class ConsumerCallbackImpl implements ConsumerStoreDbCallback{
 		}
 	}
 
+	/**
+	 * 消息消费成功后相关操作
+	 */
 	@Override
 	public void updateMsgSuccess(String msgKey) throws StoreDBCallbackException {
 		ConsumerMsg msg = new ConsumerMsg();
@@ -283,6 +341,9 @@ public class ConsumerCallbackImpl implements ConsumerStoreDbCallback{
 		consumerMsgMapper.updateByPrimaryKeySelective(msg);
 	}
 
+	/**
+	 * 消息消费失败后相关操作
+	 */
 	@Override
 	public void updateMsgFaild(String msgKey) throws StoreDBCallbackException {
 		ConsumerMsg msg = new ConsumerMsg();
@@ -292,12 +353,36 @@ public class ConsumerCallbackImpl implements ConsumerStoreDbCallback{
 		
 	}
 
+	/**
+	 * 查询需要重新消费的信息
+	 */
 	@Override
 	public List<ConsumerDto> selectReConsumerList(Integer status) {
-		return null;
+		List<ConsumerDto> dtolist=new ArrayList<>();
+		ConsumerMsg msg = new ConsumerMsg();
+		msg.setStatus(status);
+		List<ConsumerMsg> list=consumerMsgMapper.select(msg);
+		for(ConsumerMsg msgs:list) {
+			ConsumerDto dto=new ConsumerDto();
+			BeanUtils.copyProperties( msgs,dto);  
+			dtolist.add(dto);
+		}
+		return dtolist;
+	}
+	
+	/**
+	 * 查询单条需要重新消费的信息
+	 */
+	@Override
+	public ConsumerDto getReConsumerDto(String msgKey) {
+		ConsumerMsg msgs = consumerMsgMapper.selectByPrimaryKey(msgKey);
+		ConsumerDto dto = new ConsumerDto();
+		BeanUtils.copyProperties(msgs, dto);
+		return dto;
 	}
 
 }
+
 ```
 
 3.实现监听逻辑
